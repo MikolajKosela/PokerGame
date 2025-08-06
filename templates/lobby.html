@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<head>
+    <title>Poker online</title>
+</head>
+<body>
+    <h1>Witaj {{nickname}} </h1>
+    <h2 id="playersNum"></h2>
+    <ul id="players"></ul>
+    <form method="POST" id="startButton">
+    </form>
+
+    <script>
+        async function whatRoundIs()
+        {
+            const res=await fetch("/whoseRound")
+            const data=await res.json()
+            if(data.yourId==0&&!document.getElementById("start"))
+            {
+                start=document.createElement("button");
+                start.textContent="Zacznij";
+                start.id="start";
+                start.type="submit";
+                start.name="action";
+                start.value="started";
+
+                form=document.getElementById("startButton");
+                form.appendChild(start);
+            }
+            if(data.round!=-1)
+            {
+                window.location.href="/wait";
+            }
+        }
+        async function updatePlayers() {
+           const res=await fetch("/players");
+           const data=await res.json();
+           const list=document.getElementById("players");
+           list.innerHTML=""
+           var cnt=0;
+           data.forEach(function(player)
+           {
+                const li=document.createElement("li");
+                if(cnt==0)
+                    li.textContent=player.nickname+" - "+player.credits+" (admin)";
+                else
+                    li.textContent=player.nickname+" - "+player.credits;
+                list.appendChild(li);
+                cnt+=1;
+           });
+           const p_num=document.getElementById("playersNum");
+           p_num.innerHTML="Graczy w lobby: "+cnt;
+           whatRoundIs();
+        }
+
+        setInterval(updatePlayers, 1000);
+        updatePlayers();
+    </script>
+    <a> Tylko gracz będący adminem może zacząć grę </a>
+</body>
+</html>

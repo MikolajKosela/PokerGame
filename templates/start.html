@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <title>Poker online</title>
+    </head>
+    <body>
+        <h1>Wpisz swój nick</h1>
+        <form method="POST">
+            <input type="text" name="nickname">
+            <button type="submit">Dołącz</button>
+        </form>
+        <h3 id="playersNum"></h3>
+        <script>
+            async function takeData()
+            {
+                const res=await fetch("/players");
+                const data=await res.json();
+                let cnt=0;
+                data.forEach(player=>{
+                    cnt+=1;
+                })
+                const text=document.getElementById("playersNum");
+                if(cnt==1)
+                    text.innerHTML="W lobby czeka 1 gracz";
+                else if(cnt>1)
+                    text.innerHTML="W lobby czeka "+cnt+" graczy";
+            }
+            takeData();
+            setInterval(takeData, 100);
+        </script>
+    </body>
+</html>
