@@ -1,0 +1,133 @@
+.btn, .btnl, .btnr {
+  background-color: #8B4513;
+  border-radius: 8px;
+  border-style: none;
+  box-sizing: border-box;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  color: #FFD700;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  height: 40px;
+  line-height: 20px;
+  list-style: none;
+  margin: 5px;
+  outline: none;
+  padding: 10px 16px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: color 100ms;
+  vertical-align: baseline;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.btn:hover, .btnl:hover, .btnr:hover,
+.btn:focus, .btnl:focus, .btnr:focus {
+  background-color: #A0522D;
+}
+
+body{
+    margin: 5px;
+    background: #228B22;
+    color: #3F230F;
+}
+
+input {
+  background-color: #8B4513;
+  border-radius: 8px;
+  border-style: none;
+  box-sizing: border-box;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  color: #FFD700;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  height: 40px;
+  line-height: 20px;
+  list-style: none;
+  margin: 5px;
+  outline: none;
+  padding: 10px 16px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: color 100ms;
+  vertical-align: baseline;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+
+
+}
+
+.numInput{
+    width: 70px;
+}
+
+input:hover,
+input:focus {
+  background-color: #A0522D;
+}
+
+input::placeholder {
+    color: #FFD700;
+}
+
+input:-webkit-autofill {
+    box-shadow: 0 0 0px 1000px #8B4513 inset !important; /* kolor tła */
+    -webkit-text-fill-color: #FFD700 !important;            /* kolor tekstu */
+    transition: background-color 9999s ease-in-out 0s;    /* obejście migotania */
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.cont {
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.cont  .btn, .btnl, .btnr,
+.cont  .numInput {
+    box-shadow:  0 0px 0px rgba(0, 0, 0, 0);
+  margin: 0;
+  border-radius: 0;
+}
+
+
+.cont  .btnl {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-left: 1px solid #5a2e0d;
+}
+
+.cont  .btnr {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-right: 1px solid #5a2e0d;
+}
+
+/*
+.cont .btn:hover,
+.cont .numInput:hover {
+  background-color: #A0522D;
+}
+*/
+

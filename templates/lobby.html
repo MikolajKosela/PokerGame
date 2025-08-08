@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=1">
     <title>Poker online</title>
 </head>
 <body>
@@ -22,6 +24,7 @@
                 start.type="submit";
                 start.name="action";
                 start.value="started";
+                start.className="btn";
 
                 form=document.getElementById("startButton");
                 form.appendChild(start);
@@ -55,6 +58,7 @@
         setInterval(updatePlayers, 1000);
         updatePlayers();
     </script>
-    <a> Tylko gracz będący adminem może zacząć grę </a>
+    <a style="display: block;"> Gracz, który jako pierwszy dołączył do lobby to admin. </a>
+    <a style="display: block;"> Jako jedyny może on rozpocząć grę, a także wybrać zwycięzcę. </a>
 </body>
 </html>

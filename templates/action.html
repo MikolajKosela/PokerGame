@@ -1,9 +1,12 @@
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=1">
+
     <title>Poker online</title>
 </head>
 <body>
-    <h1>Twoja runda {{roundNum}}</h1>
+    <h1>Twoja runda </h1>
     <h2>Wspólne karty</h2>
     <ul id="commonCards"></ul>
     <script>
@@ -108,6 +111,7 @@
     <ul id="players"></ul>
 
     <script>
+
         async function copyData()
             {
                 const res=await fetch("/whoseRound");
@@ -117,7 +121,17 @@
                 const credits=document.getElementById("credits");
                 credits.innerHTML="Twoje żetony "+data.playerCredit+" Do wyrównania: "+data.bet;
 
-
+        function changeValue(delta) {
+                input=document.getElementById("");
+                if(data.raiseButton)
+                input = document.getElementById('raiseValue');
+                else if(data.betButton)
+                input = document.getElementById('betValue');
+                let value = parseInt(input.value) || 1;
+                value += delta;
+                if (value < parseInt(input.min)) value = parseInt(input.min);
+                input.value = value;
+            }
 
                 if(data.checkButton)
                 {
@@ -128,17 +142,15 @@
                     button.id="check";
                     button.value="check";
                     button.textContent="Czekaj";
+                    button.className="btn";
                     form.appendChild(button);
                 }
 
                 if(data.betButton)
                 {
                     const form=document.getElementById("actionForm");
-                    input=document.createElement("input");
-                    input.type="number";
-                    input.id="betValue";
-                    input.name="betValue";
-                    form.appendChild(input);
+                    const div=document.createElement("div");
+                    div.className="cont";
 
                     button=document.createElement("button");
                     button.type="submit";
@@ -146,7 +158,39 @@
                     button.id="bet";
                     button.value="bet";
                     button.textContent="Postaw zakład";
-                    form.appendChild(button);
+                    button.className="btnl";
+                    div.appendChild(button);
+
+                    input=document.createElement("input");
+                    input.type="number";
+                    input.id="betValue";
+                    input.name="betValue";
+                    input.className="numInput";
+                    input.min="1";
+                    input.step="1";
+                    input.value="1";
+                    div.appendChild(input);
+
+                    minus=document.createElement("button");
+                    minus.className="btn";
+                    minus.textContent="-";
+                    minus.type="button";
+                    minus.addEventListener('click', function(){
+                        changeValue(-1);
+                    });
+
+                    plus=document.createElement("button");
+                    plus.className="btnr";
+                    plus.textContent="+";
+                    plus.type="button";
+                    plus.addEventListener('click', function(){
+                        changeValue(1);
+                    });
+
+                    div.appendChild(minus);
+                    div.appendChild(plus);
+
+                    form.appendChild(div);
                 }
 
                 if(data.callButton)
@@ -158,17 +202,15 @@
                     button.id="call";
                     button.value="call";
                     button.textContent="Sprawdź ("+data.bet+")";
+                    button.className="btn";
                     form.appendChild(button);
                 }
 
                 if(data.raiseButton)
                 {
                     const form=document.getElementById("actionForm");
-                    input=document.createElement("input");
-                    input.type="number";
-                    input.id="raiseValue";
-                    input.name="raiseValue";
-                    form.appendChild(input)
+                    const div=document.createElement("div");
+                    div.className="cont";
 
                     button=document.createElement("button");
                     button.type="submit";
@@ -176,7 +218,39 @@
                     button.id="raise";
                     button.value="raise";
                     button.textContent="Podbij";
-                    form.appendChild(button);
+                    button.className="btnl";
+                    div.appendChild(button);
+
+                    input=document.createElement("input");
+                    input.type="number";
+                    input.id="raiseValue";
+                    input.name="raiseValue";
+                    input.className="numInput";
+                    input.min="1";
+                    input.step="1";
+                    input.value="1";
+                    div.appendChild(input);
+
+                    minus=document.createElement("button");
+                    minus.className="btn";
+                    minus.textContent="-";
+                    minus.type="button";
+                    minus.addEventListener('click', function(){
+                        changeValue(-1);
+                    });
+
+                    plus=document.createElement("button");
+                    plus.className="btnr";
+                    plus.textContent="+";
+                    plus.type="button";
+                    plus.addEventListener('click', function(){
+                        changeValue(1);
+                    });
+
+                    div.appendChild(minus);
+                    div.appendChild(plus);
+
+                    form.appendChild(div);
                 }
 
                 if(data.foldButton)
@@ -188,6 +262,7 @@
                     button.id="fold";
                     button.value="fold";
                     button.textContent="Pasuj";
+                    button.className="btn";
                     form.appendChild(button);
                 }
 
@@ -200,6 +275,7 @@
                     button.id="allin";
                     button.value="allin";
                     button.textContent="ALL IN 🔥🔥🔥";
+                    button.className="btn";
                     form.appendChild(button);
                 }
 

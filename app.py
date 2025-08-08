@@ -333,7 +333,7 @@ def action():
             return game.fold()
         elif action=="allin":
             return game.allin()
-        return redirect(url_for("wait.html"))
+        return redirect(url_for("wait"))
     return render_template("action.html", roundNum=roundNum)
 
 @app.route("/summary")
@@ -358,8 +358,11 @@ def end():
     global end
     if request.method=="POST":
         action=request.form.get("action")
-        if action=="again" and game.pot==0:
-             return game.again()
+        if action=="again":
+            if game.pot==0:
+                return game.again()
+            else:
+                return render_template("end.html");
         winnerId=int(action)
         if(action!="again" and winnerId>=0 and winnerId<len(game.players)):
             game.players[winnerId].credits+=game.pot
