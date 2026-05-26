@@ -2,7 +2,7 @@ from card import Card
 from pack import Pack
 from table import Table
 from player import Player
-from flask import Flask, request, render_template, url_for, redirect, session, jsonify
+from flask import session
 import random
 
 class Game:
@@ -23,16 +23,10 @@ class Game:
             self.tables.append(Table(self.pack, 2))
         self.tables.append(Table(self.pack, 5))
         self.whoseRoundIs=0
-        if session.get("ID")==self.whoseRoundIs:
-            return redirect(url_for("action"))
-        else:
-            return redirect(url_for("wait"))
 
     def end(self):
         self.isEnd=True
         self.whoseRoundIs=-2
-        render_template("end.html")
-        return redirect(url_for("end"))
 
     def nextRound(self):
         self.whoseRoundIs=0
@@ -78,19 +72,11 @@ class Game:
 
         if self.roundNum==10:
             return self.end()
-        if playerId==self.whoseRoundIs:
-            return redirect(url_for("action"))
-        else:
-            return redirect(url_for("wait"))
 
     def nextPlayer(self):
         self.whoseRoundIs+=1
         if self.whoseRoundIs>=len(self.players):
             return self.nextRound()
-        if session.get("ID")==self.whoseRoundIs:
-            return redirect(url_for("action"))
-        else:
-            return redirect(url_for("wait"))
 
     def check(self):
         return self.nextPlayer()
@@ -102,7 +88,6 @@ class Game:
             self.pot+=amount
             self.bet=amount
             return self.nextPlayer()
-        return redirect(url_for("action"))
 
     def call(self):
         cost=self.bet-self.players[session.get("ID")].bet
@@ -112,7 +97,6 @@ class Game:
             self.players[session.get("ID")].bet+=cost
             self.pot+=cost
             return self.nextPlayer()
-        return redirect(url_for("action"))
 
     def raiseBet(self, amount):
         cost=self.bet-self.players[session.get("ID")].bet
@@ -122,7 +106,6 @@ class Game:
             self.pot+=(amount+cost)
             self.bet+=amount
             return self.nextPlayer()
-        return redirect(url_for("action"))
 
     def fold(self):
         self.players[session.get("ID")].fold=True

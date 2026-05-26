@@ -114,6 +114,23 @@ def whoseRound():
         }
         return jsonify(roundData)
 
+@app.route("/summary")
+def sumarry():
+    if game.isEnd==True:
+        summaryData=[]
+        for i, player in enumerate(game.players):
+            cards=[card.to_dict() for card in game.tables[i].cards]
+            summaryData.append({
+                "nickname": player.nickname,
+                "id": player.ID,
+                "fold": player.fold,
+                "credits": player.credits,
+                "cards": cards,
+                })
+        return jsonify(summaryData)
+    else:
+        return jsonify({"error": "Unauthorized"}), 403
+
 @app.route("/", methods=["GET", "POST"])
 def start():
     state = checkState(0)
@@ -139,7 +156,12 @@ def lobby():
     nickname=session.get("nickname")
 
     if request.method=="POST":
-        return game.start()
+        game.start()
+        if session.get("ID")==game.whoseRoundIs:
+            return redirect(url_for("action"))
+        else:
+            return redirect(url_for("wait"))
+
     return render_template("lobby.html", nickname=nickname)
 
 @app.route("/action", methods=["POST", "GET"])
@@ -151,21 +173,21 @@ def action():
     if request.method=="POST":
         action = request.form.get("action")
         if action=="continue":
-            return game.nextPlayer()
+            game.nextPlayer()
         elif action=="check":
-            return game.check()
+            game.check()
         elif action=="bet":
             amount = int(request.form.get("betValue", 0))
-            return game.makeBet(amount)
+            game.makeBet(amount)
         elif action=="call":
-            return game.call()
+            game.call()
         elif action=="raise":
             amount = int(request.form.get("raiseValue", 0))
-            return game.raiseBet(amount)
+            game.raiseBet(amount)
         elif action=="fold":
-            return game.fold()
+            game.fold()
         elif action=="allin":
-            return game.allin()
+            game.allin()
         return redirect(url_for("wait"))
     return render_template("action.html", roundNum=game.roundNum)
 
