@@ -10,8 +10,33 @@ app.secret_key="tajny klucz"
 
 game=Game()
 
+def checkState(methodNum):
+    nickname=session.get("nickname")
+    curID=session.get("ID")
+    print(nickname, curID, nickname not in game.players, methodNum)
+
+    #0 - start
+    #1 - lobby
+    #2 - action
+    #3 - wait
+    #4 - end
+    if nickname not in game.players and methodNum != 0:
+        print("000")
+        return redirect(url_for("start"))
+    if game.isEnd == True and methodNum != 4:
+        return redirect(url_for("end"))
+    if game.whoseRoundIs==-1 and methodNum != 1:
+        return redirect(url_for("lobby"))
+    if curID != game.whoseRoundIs and methodNum != 3:
+        return redirect(url_for("wait"))
+    if curID == game.whoseRoundIs and methodNum != 2:
+        return redirect(url_for("action"))
+    return jsonify({"error": "Can't check game state"}), 404
+
 @app.route("/", methods=["GET", "POST"])
 def start():
+    checkState(0)
+    print("wywołano start")
     if request.method=="POST":
         nickname=request.form["nickname"]
         session["nickname"]=nickname
@@ -24,9 +49,10 @@ def start():
 
 @app.route("/lobby", methods=["GET", "POST"])
 def lobby():
+    checkState(1)
     nickname=session.get("nickname")
-    if not nickname :
-        return redirect(url_for("start"))
+    #if not nickname :
+    #    return redirect(url_for("start"))
     if request.method=="POST":
         return game.start()
     return render_template("lobby.html", nickname=nickname)
