@@ -3,7 +3,7 @@ from pack import Pack
 from table import Table
 from player import Player
 from game import Game
-from flask import Flask, request, render_template, url_for, redirect, session, jsonify
+from flask import Flask, request, render_template, url_for, redirect, session, jsonify, session
 import random
 app = Flask(__name__)
 app.secret_key="tajny klucz"
@@ -13,49 +13,53 @@ game=Game()
 def checkState(methodNum):
     nickname=session.get("nickname")
     curID=session.get("ID")
-    print(nickname, curID, nickname not in game.players, methodNum)
+    playerExist = False
 
     #0 - start
     #1 - lobby
     #2 - action
     #3 - wait
     #4 - end
-    if nickname not in game.players and methodNum != 0:
-        print("000")
-        return redirect(url_for("start"))
-    if game.isEnd == True and methodNum != 4:
-        return redirect(url_for("end"))
-    if game.whoseRoundIs==-1 and methodNum != 1:
-        return redirect(url_for("lobby"))
-    if curID != game.whoseRoundIs and methodNum != 3:
-        return redirect(url_for("wait"))
-    if curID == game.whoseRoundIs and methodNum != 2:
-        return redirect(url_for("action"))
-    return jsonify({"error": "Can't check game state"}), 404
 
-@app.route("/", methods=["GET", "POST"])
-def start():
-    checkState(0)
-    print("wywołano start")
-    if request.method=="POST":
-        nickname=request.form["nickname"]
-        session["nickname"]=nickname
-        session["ID"]=len(game.players)
-        game.players.append(Player(nickname, 100, len(game.players)))
-        game.playersNum=len(game.players)
-        return redirect(url_for("lobby"))
-    return  render_template("start.html")
+    for player in game.players:
+        if nickname == player.nickname:
+            playerExist = True
 
+    if playerExist == False and curID != None:
+        session.clear()
+        curID = None
+        nickname = None
+    
+    if curID == None:
+        if methodNum == 0:
+            return None
+        else:
+            return redirect(url_for("start"))
 
-@app.route("/lobby", methods=["GET", "POST"])
-def lobby():
-    checkState(1)
-    nickname=session.get("nickname")
-    #if not nickname :
-    #    return redirect(url_for("start"))
-    if request.method=="POST":
-        return game.start()
-    return render_template("lobby.html", nickname=nickname)
+    if game.isEnd == True:
+        if methodNum == 4:
+            return None
+        else:
+            return redirect(url_for("end"))
+
+    if game.whoseRoundIs == -1:
+        if methodNum == 1:
+            return None
+        else:
+            return redirect(url_for("lobby"))
+
+    if curID != game.whoseRoundIs:
+        if methodNum == 3:
+            return None
+        else:
+            return redirect(url_for("wait"))
+
+    if curID == game.whoseRoundIs:
+        if methodNum == 2:
+            return None
+        else:
+            return redirect(url_for("action"))
+    return None
 
 @app.route("/players")
 def get_players():
@@ -110,10 +114,40 @@ def whoseRound():
         }
         return jsonify(roundData)
 
+@app.route("/", methods=["GET", "POST"])
+def start():
+    state = checkState(0)
+    if state is not None:
+        return state
+
+    if request.method=="POST":
+        nickname=request.form["nickname"]
+        session["nickname"]=nickname
+        session["ID"]=len(game.players)
+        game.players.append(Player(nickname, 99, len(game.players)))
+        game.playersNum=len(game.players)
+        return redirect(url_for("lobby"))
+    return  render_template("start.html")
+
+
+@app.route("/lobby", methods=["GET", "POST"])
+def lobby():
+    state = checkState(1)
+    if state is not None:
+        return state
+
+    nickname=session.get("nickname")
+
+    if request.method=="POST":
+        return game.start()
+    return render_template("lobby.html", nickname=nickname)
+
 @app.route("/action", methods=["POST", "GET"])
 def action():
-    if game.whoseRoundIs==-1:
-        return redirect(url_for("lobby"))
+    state = checkState(2)
+    if state is not None:
+        return state
+
     if request.method=="POST":
         action = request.form.get("action")
         if action=="continue":
@@ -135,25 +169,12 @@ def action():
         return redirect(url_for("wait"))
     return render_template("action.html", roundNum=game.roundNum)
 
-@app.route("/summary")
-def sumarry():
-    if game.isEnd==True:
-        summaryData=[]
-        for i, player in enumerate(game.players):
-            cards=[card.to_dict() for card in game.tables[i].cards]
-            summaryData.append({
-                "nickname": player.nickname,
-                "id": player.ID,
-                "fold": player.fold,
-                "credits": player.credits,
-                "cards": cards,
-                })
-        return jsonify(summaryData)
-    else:
-        return jsonify({"error": "Unauthorized"}), 403
-
 @app.route("/end", methods=["GET", "POST"])
 def end():
+    state = checkState(4)
+    if state is not None:
+        return state
+
     if request.method=="POST":
         action=request.form.get("action")
         if action=="again":
