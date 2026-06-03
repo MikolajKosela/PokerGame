@@ -4,17 +4,27 @@ from table import Table
 from player import Player
 from game import Game
 from flask import Flask, request, render_template, url_for, redirect, session, jsonify, session
+from flask_socketio import SocketIO, emit
 import random
+
 app = Flask(__name__)
+socketio = SocketIO(app)
 app.secret_key="tajny klucz"
 
 game=Game()
 
-def checkState(methodNum):
+@socketio.on("connect")
+def handle_connect():
+    print("Klient połączony")
+
+
+@socketio.on("checkStateRequest")
+def checkState():
     nickname=session.get("nickname")
     curID=session.get("ID")
     playerExist = False
 
+    state = 0
     #0 - start
     #1 - lobby
     #2 - action
@@ -31,35 +41,20 @@ def checkState(methodNum):
         nickname = None
     
     if curID == None:
-        if methodNum == 0:
-            return None
-        else:
-            return redirect(url_for("start"))
+        state="/"
+    elif game.isEnd == True:
+        state="/end"
+    elif game.whoseRoundIs == -1:
+        state="/lobby"
+    elif curID == game.whoseRoundIs:
+        state="/action"
+    elif curID != game.whoseRoundIs:
+        state="/wait"
 
-    if game.isEnd == True:
-        if methodNum == 4:
-            return None
-        else:
-            return redirect(url_for("end"))
-
-    if game.whoseRoundIs == -1:
-        if methodNum == 1:
-            return None
-        else:
-            return redirect(url_for("lobby"))
-
-    if curID != game.whoseRoundIs:
-        if methodNum == 3:
-            return None
-        else:
-            return redirect(url_for("wait"))
-
-    if curID == game.whoseRoundIs:
-        if methodNum == 2:
-            return None
-        else:
-            return redirect(url_for("action"))
-    return None
+    print("Dostałem zapytanie, wysyłam", state)
+    socketio.emit("checkState", {
+        "state": state
+    }, to=request.sid)
 
 @app.route("/players")
 def get_players():
@@ -131,28 +126,30 @@ def sumarry():
     else:
         return jsonify({"error": "Unauthorized"}), 403
 
-@app.route("/", methods=["GET", "POST"])
-def start():
-    state = checkState(0)
+@socketio.on("join")
+def join(data):
+    state = checkState()
     if state is not None:
         return state
 
-    if request.method=="POST":
-        nickname=request.form["nickname"]
-        session["nickname"]=nickname
-        session["ID"]=len(game.players)
-        game.players.append(Player(nickname, 99, len(game.players)))
-        game.playersNum=len(game.players)
-        return redirect(url_for("lobby"))
-    return  render_template("start.html")
+    nickname=data["nickname"]
+    session["nickname"]=request.sid
+    session["ID"]=len(game.players)
+    game.players.append(Player(nickname, 99, len(game.players)))
+    game.playersNum=len(game.players)
+    print("Przeszło", nickname)
 
+    socketio.emit("joined", {
+        "ok": True
+    }, to=request.sid)
+
+@app.route("/", methods=["GET", "POST"])
+def start():
+    return  render_template("start.html")
 
 @app.route("/lobby", methods=["GET", "POST"])
 def lobby():
-    state = checkState(1)
-    if state is not None:
-        return state
-
+    print("jestem w lobby")
     nickname=session.get("nickname")
 
     if request.method=="POST":
@@ -164,12 +161,9 @@ def lobby():
 
     return render_template("lobby.html", nickname=nickname)
 
+
 @app.route("/action", methods=["POST", "GET"])
 def action():
-    state = checkState(2)
-    if state is not None:
-        return state
-
     if request.method=="POST":
         action = request.form.get("action")
         if action=="continue":
