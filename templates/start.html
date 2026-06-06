@@ -1,42 +1,44 @@
 <html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=1">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}?v=1"
+    />
     <title>Poker online</title>
-</head>
-<body>
-    <h1> Poker online </h1>
-    <h2> Wpisz swój nickname </h2>
+  </head>
+  <body>
+    <h1>Poker online</h1>
+    <h2>Wpisz swój nickname</h2>
     <form>
-        <input type="text" id="nickname" autofocus>
-        <button class="btn" type="submit" onclick="join()">Dołącz</button>
+      <input type="text" id="nickname" autofocus />
+      <button class="btn" type="submit" onclick="join()">Dołącz</button>
     </form>
     <h3 id="playersNum"></h3>
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script>
-        const socket = io();
+      const socket = io();
 
-        socket.on("connect", () => {
-            socket.emit("checkStateRequest")
-        });
+      socket.on("connect", () => {
+        socket.emit("checkStateRequest");
+      });
 
-        socket.on("checkState", (data) => {
-            console.log(data.state);
-            const target = data.state;
-            if(window.location.pathname != target) {
-                window.location.href = target;
-            }
-        });
-
-        socket.on("joined", () => {
-            window.location.href="/lobby";
-        });
-
-        function join() {
-            socket.emit("join", {
-                nickname: document.getElementById("nickname").value
-            });
+      socket.on("checkState", (data) => {
+        const target = data.state;
+        if (window.location.pathname != target) {
+          window.location.href = target;
         }
+      });
+
+      socket.on("joined", () => {
+        window.location.href = "/lobby";
+      });
+
+      function join() {
+        socket.emit("join", {
+          nickname: document.getElementById("nickname").value,
+        });
+      }
     </script>
-</body>
+  </body>
 </html>

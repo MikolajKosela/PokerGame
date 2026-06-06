@@ -1,11 +1,11 @@
 class Player:
-    def __init__ (self, nickname, credits, ID):
-        self.nickname=nickname
-        self.ID=ID
-        self.credits=credits
-        self.bet=0
-        self.allin=False
-        self.fold=False
+    def __init__(self, nickname, credits, ID):
+        self.nickname = nickname
+        self.ID = ID
+        self.credits = credits
+        self.bet = 0
+        self.allin = False
+        self.fold = False
 
     def to_dict(self):
         return {

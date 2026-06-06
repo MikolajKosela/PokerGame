@@ -1,50 +1,52 @@
 <html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=1">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}?v=1"
+    />
 
     <title>Poker online</title>
-</head>
-<body>
-    <h1>Twoja runda </h1>
+  </head>
+  <body>
+    <h1>Twoja runda</h1>
     <h2>Wspólne karty</h2>
     <ul id="commonCards"></ul>
     <script>
-        async function printCommonCards()
-        {
-            const res=await fetch("/commonCards");
-            const data=await res.json();
-            const list=document.getElementById("commonCards");
-            list.innerHTML="";
-            data.cards.forEach(function(card){
-                const li = document.createElement("li");
-                if (card.visible) {
-                    let symbol = "";
-                    let color = "black"; 
+      async function printCommonCards() {
+        const res = await fetch("/commonCards");
+        const data = await res.json();
+        const list = document.getElementById("commonCards");
+        list.innerHTML = "";
+        data.cards.forEach(function (card) {
+          const li = document.createElement("li");
+          if (card.visible) {
+            let symbol = "";
+            let color = "black";
 
-                if (card.color == "Pik") {
-                    symbol = "♠";
-                } else if (card.color == "Kier") {
-                    symbol = "♥";
-                    color = "red";
-                } else if (card.color == "Karo") {
-                    symbol = "♦";
-                    color = "red";
-                } else if (card.color == "Trefl") {
-                    symbol = "♣";
-                } else {
-                    li.textContent = card.color + " " + card.number;
-                    return;
-                }
+            if (card.color == "Pik") {
+              symbol = "♠";
+            } else if (card.color == "Kier") {
+              symbol = "♥";
+              color = "red";
+            } else if (card.color == "Karo") {
+              symbol = "♦";
+              color = "red";
+            } else if (card.color == "Trefl") {
+              symbol = "♣";
+            } else {
+              li.textContent = card.color + " " + card.number;
+              return;
+            }
 
-                li.innerHTML = `<span style="color: ${color};">${symbol}</span> ${card.number}`;
-                } else {
-                    li.textContent = "???";
-                }
-                list.appendChild(li);
-            });
-        }
-        printCommonCards();
+            li.innerHTML = `<span style="color: ${color};">${symbol}</span> ${card.number}`;
+          } else {
+            li.textContent = "???";
+          }
+          list.appendChild(li);
+        });
+      }
+      printCommonCards();
     </script>
 
     <h2>Twoje karty</h2>
@@ -54,253 +56,235 @@
     <h3 id="credits"></h3>
 
     <script>
-        async function printYourCards()
-        {
-            const res=await fetch("/yourCards");
-            const data=await res.json();
-            const list=document.getElementById("yourCards");
-            list.innerHTML="";
-            data.cards.forEach(function(card){
-                const li = document.createElement("li");
-                if (card.visible) {
-                    let symbol = "";
-                    let color = "black";
+      async function printYourCards() {
+        const res = await fetch("/yourCards");
+        const data = await res.json();
+        const list = document.getElementById("yourCards");
+        list.innerHTML = "";
+        data.cards.forEach(function (card) {
+          const li = document.createElement("li");
+          if (card.visible) {
+            let symbol = "";
+            let color = "black";
 
-                if (card.color == "Pik") {
-                    symbol = "♠";
-                } else if (card.color == "Kier") {
-                    symbol = "♥";
-                    color = "red";
-                } else if (card.color == "Karo") {
-                    symbol = "♦";
-                    color = "red";
-                } else if (card.color == "Trefl") {
-                    symbol = "♣";
-                } else {
-                    li.textContent = card.color + " " + card.number;
-                    return;
-                }
-
-                li.innerHTML = `<span style="color: ${color};">${symbol}</span> ${card.number}`;
-                } else {
-                    li.textContent = "???";
-                }
-                list.appendChild(li);
-
-            });
-        }
-        printYourCards();
-
-        async function whatRoundIs()
-            {
-                const res=await fetch("/whoseRound");
-                const data=await res.json();
-                if(data.round==-2)
-                    window.location.href="/end";
-                if(data.round==-1)
-                    window.location.href="/";
-
+            if (card.color == "Pik") {
+              symbol = "♠";
+            } else if (card.color == "Kier") {
+              symbol = "♥";
+              color = "red";
+            } else if (card.color == "Karo") {
+              symbol = "♦";
+              color = "red";
+            } else if (card.color == "Trefl") {
+              symbol = "♣";
+            } else {
+              li.textContent = card.color + " " + card.number;
+              return;
             }
 
-        whatRoundIs();
+            li.innerHTML = `<span style="color: ${color};">${symbol}</span> ${card.number}`;
+          } else {
+            li.textContent = "???";
+          }
+          list.appendChild(li);
+        });
+      }
+      printYourCards();
 
+      async function whatRoundIs() {
+        const res = await fetch("/whoseRound");
+        const data = await res.json();
+        if (data.round == -2) window.location.href = "/end";
+        if (data.round == -1) window.location.href = "/";
+      }
+
+      whatRoundIs();
     </script>
     <form method="POST" id="actionForm"></form>
 
-    <h3> Inni gracze: </h3>
+    <h3>Inni gracze:</h3>
     <ul id="players"></ul>
 
     <script>
-
-        async function copyData()
-            {
-                const res=await fetch("/whoseRound");
-                const data=await res.json();
-                const pot=document.getElementById("pot");
-                pot.innerHTML="Całkowita pula wynosi: "+data.pot;
-                const credits=document.getElementById("credits");
-                credits.innerHTML="Twoje żetony "+data.playerCredit+" Do wyrównania: "+data.bet;
+      async function copyData() {
+        const res = await fetch("/whoseRound");
+        const data = await res.json();
+        const pot = document.getElementById("pot");
+        pot.innerHTML = "Całkowita pula wynosi: " + data.pot;
+        const credits = document.getElementById("credits");
+        credits.innerHTML =
+          "Twoje żetony " + data.playerCredit + " Do wyrównania: " + data.bet;
 
         function changeValue(delta) {
-                input=document.getElementById("");
-                if(data.raiseButton)
-                input = document.getElementById('raiseValue');
-                else if(data.betButton)
-                input = document.getElementById('betValue');
-                let value = parseInt(input.value) || 1;
-                value += delta;
-                if (value < parseInt(input.min)) value = parseInt(input.min);
-                input.value = value;
-            }
+          input = document.getElementById("");
+          if (data.raiseButton) input = document.getElementById("raiseValue");
+          else if (data.betButton) input = document.getElementById("betValue");
+          let value = parseInt(input.value) || 1;
+          value += delta;
+          if (value < parseInt(input.min)) value = parseInt(input.min);
+          input.value = value;
+        }
 
-                if(data.checkButton)
-                {
-                    const form=document.getElementById("actionForm");
-                    button=document.createElement("button");
-                    button.type="submit";
-                    button.name="action";
-                    button.id="check";
-                    button.value="check";
-                    button.textContent="Czekaj";
-                    button.className="btn";
-                    form.appendChild(button);
-                }
+        if (data.checkButton) {
+          const form = document.getElementById("actionForm");
+          button = document.createElement("button");
+          button.type = "submit";
+          button.name = "action";
+          button.id = "check";
+          button.value = "check";
+          button.textContent = "Czekaj";
+          button.className = "btn";
+          form.appendChild(button);
+        }
 
-                if(data.betButton)
-                {
-                    const form=document.getElementById("actionForm");
-                    const div=document.createElement("div");
-                    div.className="cont";
+        if (data.betButton) {
+          const form = document.getElementById("actionForm");
+          const div = document.createElement("div");
+          div.className = "cont";
 
-                    button=document.createElement("button");
-                    button.type="submit";
-                    button.name="action";
-                    button.id="bet";
-                    button.value="bet";
-                    button.textContent="Postaw zakład";
-                    button.className="btnl";
-                    div.appendChild(button);
+          button = document.createElement("button");
+          button.type = "submit";
+          button.name = "action";
+          button.id = "bet";
+          button.value = "bet";
+          button.textContent = "Postaw zakład";
+          button.className = "btnl";
+          div.appendChild(button);
 
-                    input=document.createElement("input");
-                    input.type="number";
-                    input.id="betValue";
-                    input.name="betValue";
-                    input.className="numInput";
-                    input.min="1";
-                    input.step="1";
-                    input.value="1";
-                    div.appendChild(input);
+          input = document.createElement("input");
+          input.type = "number";
+          input.id = "betValue";
+          input.name = "betValue";
+          input.className = "numInput";
+          input.min = "1";
+          input.step = "1";
+          input.value = "1";
+          div.appendChild(input);
 
-                    minus=document.createElement("button");
-                    minus.className="btn";
-                    minus.textContent="-";
-                    minus.type="button";
-                    minus.addEventListener('click', function(){
-                        changeValue(-1);
-                    });
+          minus = document.createElement("button");
+          minus.className = "btn";
+          minus.textContent = "-";
+          minus.type = "button";
+          minus.addEventListener("click", function () {
+            changeValue(-1);
+          });
 
-                    plus=document.createElement("button");
-                    plus.className="btnr";
-                    plus.textContent="+";
-                    plus.type="button";
-                    plus.addEventListener('click', function(){
-                        changeValue(1);
-                    });
+          plus = document.createElement("button");
+          plus.className = "btnr";
+          plus.textContent = "+";
+          plus.type = "button";
+          plus.addEventListener("click", function () {
+            changeValue(1);
+          });
 
-                    div.appendChild(minus);
-                    div.appendChild(plus);
+          div.appendChild(minus);
+          div.appendChild(plus);
 
-                    form.appendChild(div);
-                }
+          form.appendChild(div);
+        }
 
-                if(data.callButton)
-                {
-                    const form=document.getElementById("actionForm");
-                    button=document.createElement("button");
-                    button.type="submit";
-                    button.name="action";
-                    button.id="call";
-                    button.value="call";
-                    button.textContent="Sprawdź ("+data.bet+")";
-                    button.className="btn";
-                    form.appendChild(button);
-                }
+        if (data.callButton) {
+          const form = document.getElementById("actionForm");
+          button = document.createElement("button");
+          button.type = "submit";
+          button.name = "action";
+          button.id = "call";
+          button.value = "call";
+          button.textContent = "Sprawdź (" + data.bet + ")";
+          button.className = "btn";
+          form.appendChild(button);
+        }
 
-                if(data.raiseButton)
-                {
-                    const form=document.getElementById("actionForm");
-                    const div=document.createElement("div");
-                    div.className="cont";
+        if (data.raiseButton) {
+          const form = document.getElementById("actionForm");
+          const div = document.createElement("div");
+          div.className = "cont";
 
-                    button=document.createElement("button");
-                    button.type="submit";
-                    button.name="action";
-                    button.id="raise";
-                    button.value="raise";
-                    button.textContent="Podbij";
-                    button.className="btnl";
-                    div.appendChild(button);
+          button = document.createElement("button");
+          button.type = "submit";
+          button.name = "action";
+          button.id = "raise";
+          button.value = "raise";
+          button.textContent = "Podbij";
+          button.className = "btnl";
+          div.appendChild(button);
 
-                    input=document.createElement("input");
-                    input.type="number";
-                    input.id="raiseValue";
-                    input.name="raiseValue";
-                    input.className="numInput";
-                    input.min="1";
-                    input.step="1";
-                    input.value="1";
-                    div.appendChild(input);
+          input = document.createElement("input");
+          input.type = "number";
+          input.id = "raiseValue";
+          input.name = "raiseValue";
+          input.className = "numInput";
+          input.min = "1";
+          input.step = "1";
+          input.value = "1";
+          div.appendChild(input);
 
-                    minus=document.createElement("button");
-                    minus.className="btn";
-                    minus.textContent="-";
-                    minus.type="button";
-                    minus.addEventListener('click', function(){
-                        changeValue(-1);
-                    });
+          minus = document.createElement("button");
+          minus.className = "btn";
+          minus.textContent = "-";
+          minus.type = "button";
+          minus.addEventListener("click", function () {
+            changeValue(-1);
+          });
 
-                    plus=document.createElement("button");
-                    plus.className="btnr";
-                    plus.textContent="+";
-                    plus.type="button";
-                    plus.addEventListener('click', function(){
-                        changeValue(1);
-                    });
+          plus = document.createElement("button");
+          plus.className = "btnr";
+          plus.textContent = "+";
+          plus.type = "button";
+          plus.addEventListener("click", function () {
+            changeValue(1);
+          });
 
-                    div.appendChild(minus);
-                    div.appendChild(plus);
+          div.appendChild(minus);
+          div.appendChild(plus);
 
-                    form.appendChild(div);
-                }
+          form.appendChild(div);
+        }
 
-                if(data.foldButton)
-                {
-                    const form=document.getElementById("actionForm");
-                    button=document.createElement("button");
-                    button.type="submit";
-                    button.name="action";
-                    button.id="fold";
-                    button.value="fold";
-                    button.textContent="Pasuj";
-                    button.className="btn";
-                    form.appendChild(button);
-                }
+        if (data.foldButton) {
+          const form = document.getElementById("actionForm");
+          button = document.createElement("button");
+          button.type = "submit";
+          button.name = "action";
+          button.id = "fold";
+          button.value = "fold";
+          button.textContent = "Pasuj";
+          button.className = "btn";
+          form.appendChild(button);
+        }
 
-                if(data.allinButton)
-                {
-                    const form=document.getElementById("actionForm");
-                    button=document.createElement("button");
-                    button.type="submit";
-                    button.name="action";
-                    button.id="allin";
-                    button.value="allin";
-                    button.textContent="ALL IN 🔥🔥🔥";
-                    button.className="btn";
-                    form.appendChild(button);
-                }
+        if (data.allinButton) {
+          const form = document.getElementById("actionForm");
+          button = document.createElement("button");
+          button.type = "submit";
+          button.name = "action";
+          button.id = "allin";
+          button.value = "allin";
+          button.textContent = "ALL IN 🔥🔥🔥";
+          button.className = "btn";
+          form.appendChild(button);
+        }
 
-                const r=await fetch("/players");
-                const d=await r.json();
-                const list=document.getElementById("players");
-                list.innerHTML=""
-                var cnt=0;
-                d.forEach(function(player)
-                {
-                    if(data.yourId!=cnt){
-                        const li=document.createElement("li");
-                        if(cnt==0)
-                            li.textContent=player.nickname+" - "+player.credits+" (admin)";
-                        else
-                            li.textContent=player.nickname+" - "+player.credits;
-                        list.appendChild(li);
-                    }
-                    cnt+=1;
-                });
-            }
+        const r = await fetch("/players");
+        const d = await r.json();
+        const list = document.getElementById("players");
+        list.innerHTML = "";
+        var cnt = 0;
+        d.forEach(function (player) {
+          if (data.yourId != cnt) {
+            const li = document.createElement("li");
+            if (cnt == 0)
+              li.textContent =
+                player.nickname + " - " + player.credits + " (admin)";
+            else li.textContent = player.nickname + " - " + player.credits;
+            list.appendChild(li);
+          }
+          cnt += 1;
+        });
+      }
 
-        copyData();
-        setInterval(whatRoundIs, 1000);
+      copyData();
+      setInterval(whatRoundIs, 1000);
     </script>
-
-</body>
+  </body>
 </html>

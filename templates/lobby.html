@@ -12,6 +12,17 @@
     </form>
 
     <script>
+        socket.on("connect", () => {
+            socket.emit("checkStateRequest")
+        });
+
+        socket.on("checkState", (data) => {
+            const target = data.state;
+            if(window.location.pahtname != target) {
+                window.location.href = target;
+            }
+        });
+
         async function whatRoundIs()
         {
             const res=await fetch("/whoseRound")
