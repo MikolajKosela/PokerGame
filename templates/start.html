@@ -23,14 +23,18 @@
         socket.emit("checkStateRequest");
       });
 
+      /*
       socket.on("checkState", (data) => {
         const target = data.state;
         if (window.location.pathname != target) {
           window.location.href = target;
         }
       });
+      */
 
-      socket.on("joined", () => {
+      socket.on("joined", (data) => {
+        localStorage.setItem("gameID", data.gameID);
+        console.log(localStorage.getItem("gameID"));
         window.location.href = "/lobby";
       });
 

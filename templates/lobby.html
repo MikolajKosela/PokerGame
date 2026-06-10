@@ -11,9 +11,13 @@
     <form method="POST" id="startButton">
     </form>
 
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script>
+        const socket = io();
+
         socket.on("connect", () => {
             socket.emit("checkStateRequest")
+            //console.log(localStorage.getItem("gameID"));
         });
 
         socket.on("checkState", (data) => {
@@ -23,6 +27,7 @@
             }
         });
 
+        /*
         async function whatRoundIs()
         {
             const res=await fetch("/whoseRound")
@@ -68,6 +73,7 @@
 
         setInterval(updatePlayers, 1000);
         updatePlayers();
+        */
     </script>
     <a style="display: block;"> Gracz, który jako pierwszy dołączył do lobby to admin. </a>
     <a style="display: block;"> Jako jedyny może on rozpocząć grę, a także wybrać zwycięzcę. </a>

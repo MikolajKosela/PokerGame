@@ -10,6 +10,7 @@ class Game:
     def __init__(self):
         self.players = []
         self.tables = []
+        self.idToPlayer = dict()
         self.pack = Pack()
         self.pot = 0
         self.bet = 1

@@ -9,7 +9,6 @@ from flask import (
     render_template,
     url_for,
     redirect,
-    session,
     jsonify,
     session,
 )
@@ -21,6 +20,14 @@ socketio = SocketIO(app)
 app.secret_key = "tajny klucz"
 
 game = Game()
+
+def grantID():
+    id = random.randint(1000, 100000)
+    while id in game.idToPlayer.keys():
+        id = random.randint(1000, 100000)
+
+    game.idToPlayer[id] = len(game.idToPlayer)
+    return id
 
 
 @socketio.on("checkStateRequest")
@@ -36,14 +43,12 @@ def checkState():
     # 3 - wait
     # 4 - end
 
-    for player in game.players:
-        if nickname == player.nickname:
-            playerExist = True
-
+    '''
     if playerExist == False and curID != None:
         session.clear()
         curID = None
         nickname = None
+    '''
 
     if curID == None:
         state = "/"
@@ -152,13 +157,12 @@ def join(data):
         return state
 
     nickname = data["nickname"]
-    session["nickname"] = request.sid
+    session["nickname"] = nickname
     session["ID"] = len(game.players)
     game.players.append(Player(nickname, 99, len(game.players)))
     game.playersNum = len(game.players)
-    print("Przeszło", nickname)
 
-    socketio.emit("joined", {"ok": True}, to=request.sid)
+    socketio.emit("joined", {"gameID": grantID()}, to=request.sid)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -168,6 +172,7 @@ def start():
 
 @app.route("/lobby", methods=["GET", "POST"])
 def lobby():
+    '''
     print("jestem w lobby")
     nickname = session.get("nickname")
 
@@ -177,8 +182,8 @@ def lobby():
             return redirect(url_for("action"))
         else:
             return redirect(url_for("wait"))
-
-    return render_template("lobby.html", nickname=nickname)
+    '''
+    return render_template("lobby.html")
 
 
 @app.route("/action", methods=["POST", "GET"])
