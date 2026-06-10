@@ -21,7 +21,7 @@ app.secret_key = "tajny klucz"
 
 game = Game()
 
-def grantID():
+def grantToken():
     id = random.randint(1000, 100000)
     while id in game.idToPlayer.keys():
         id = random.randint(1000, 100000)
@@ -29,19 +29,30 @@ def grantID():
     game.idToPlayer[id] = len(game.idToPlayer)
     return id
 
-def checkID(id):
-    id = int(id)
+def checkToken(token):
+    token = str(token)
+    if token.isdecimal() == False:
+        return False
+
+    token = int(token)
 
     print(game.idToPlayer)
-    if id in game.idToPlayer.keys():
+    if token in game.idToPlayer.keys():
         return True
     return False 
 
 @socketio.on("handshake")
 def handshake(data):
     ok = False
-    if checkID(data["gameID"] == True):
+    print(data)
+    if checkToken(data["token"]) == True:
         ok = True
+
+    if ok == True:
+        curID = game.idToPlayer[int(data["token"])]
+        session["ID"] = curID
+        session["nickname"] = game.players[curID].nickname
+        print(session)
 
     socketio.emit("handshakeAnswer", {"ok" : ok}, to=request.sid)
 
@@ -177,7 +188,7 @@ def join(data):
     game.players.append(Player(nickname, 99, len(game.players)))
     game.playersNum = len(game.players)
 
-    socketio.emit("joined", {"gameID": grantID()}, to=request.sid)
+    socketio.emit("joined", {"token": grantToken()}, to=request.sid)
 
 
 @app.route("/", methods=["GET", "POST"])
