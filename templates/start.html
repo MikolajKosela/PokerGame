@@ -20,21 +20,30 @@
       const socket = io();
 
       socket.on("connect", () => {
-        socket.emit("checkStateRequest");
+        socket.emit("handshake", {
+          gameID : localStorage.getItem("gameID"),
+        });
+        //socket.emit("checkStateRequest");
       });
 
-      /*
+      socket.on("handshakeAnswer", (data) => {
+        const ok = data.ok;
+        console.log(ok);
+        if (ok == false) {
+          localStorage.clear("gameID");
+        }
+      })
+
       socket.on("checkState", (data) => {
         const target = data.state;
         if (window.location.pathname != target) {
           window.location.href = target;
         }
       });
-      */
 
       socket.on("joined", (data) => {
         localStorage.setItem("gameID", data.gameID);
-        console.log(localStorage.getItem("gameID"));
+        //console.log(localStorage.getItem("gameID"));
         window.location.href = "/lobby";
       });
 

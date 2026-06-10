@@ -29,6 +29,21 @@ def grantID():
     game.idToPlayer[id] = len(game.idToPlayer)
     return id
 
+def checkID(id):
+    id = int(id)
+
+    print(game.idToPlayer)
+    if id in game.idToPlayer.keys():
+        return True
+    return False 
+
+@socketio.on("handshake")
+def handshake(data):
+    ok = False
+    if checkID(data["gameID"] == True):
+        ok = True
+
+    socketio.emit("handshakeAnswer", {"ok" : ok}, to=request.sid)
 
 @socketio.on("checkStateRequest")
 def checkState():
