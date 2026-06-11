@@ -3,7 +3,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}?v=1"
+      href="/static/css/style.css"
     />
     <title>Poker online</title>
   </head>
@@ -15,46 +15,9 @@
       <button class="btn" type="submit" onclick="join()">Dołącz</button>
     </form>
     <h3 id="playersNum"></h3>
+
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-    <script>
-      const socket = io();
-
-      socket.on("connect", () => {
-        socket.emit("handshake", {
-          token : localStorage.getItem("token"),
-        });
-        socket.emit("checkStateRequest");
-      });
-
-      socket.on("handshakeAnswer", (data) => {
-        const ok = data.ok;
-        console.log(ok);
-        if (ok == false) {
-          localStorage.clear("token");
-          localStorage.clear("nickname");
-        }
-      })
-
-      socket.on("checkState", (data) => {
-        const target = data.state;
-        if (window.location.pathname != target) {
-          window.location.href = target;
-        }
-      });
-
-      socket.on("joined", (data) => {
-        localStorage.setItem("token", data.token);
-        window.location.href = "/lobby";
-      });
-
-      function join() {
-        let nickname = document.getElementById("nickname").value;
-        localStorage.setItem("nickname", nickname);
-
-        socket.emit("join", {
-          nickname : nickname
-        });
-      }
-    </script>
+    <script src="/static/js/socket.js"></script>
+    <script src="/static/js/start.js"></script>
   </body>
 </html>

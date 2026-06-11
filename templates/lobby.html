@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=1">
+    <link
+      rel="stylesheet"
+      href="/static/css/style.css"
+    />
     <title>Poker online</title>
 </head>
 <body>
@@ -12,106 +15,9 @@
     </form>
 
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-    <script>
-        const welcome=document.getElementById("welcome");
-        let nickname=localStorage.getItem("nickname");
-        welcome.innerHTML="Witaj "+nickname;
-
-        const socket = io();
-
-        socket.on("connect", () => {
-            console.log(localStorage.getItem("token"));
-            socket.emit("handshake", {
-                token : localStorage.getItem("token"),
-            });
-            socket.emit("checkStateRequest");
-        });
-
-        socket.on("handshakeAnswer", (data) => {
-            const ok = data.ok;
-            console.log(ok);
-            if (ok == false) {
-                localStorage.clear("token");
-                localStorage.clear("nickname");
-            }
-        })
-
-        socket.on("checkState", (data) => {
-            const target = data.state;
-            if(window.location.pathname != target) {
-                window.location.href = target;
-            } else {
-                socket.emit("playersListRequest");
-            }
-        });
-
-        socket.on("playersList", (data) => {
-           const list=document.getElementById("players");
-           list.innerHTML=""
-           var cnt=0;
-
-           data.forEach(function(player)
-           {
-                const li=document.createElement("li");
-                if(cnt==0)
-                    li.textContent=player.nickname+" - "+player.credits+" (admin)";
-                else
-                    li.textContent=player.nickname+" - "+player.credits;
-                list.appendChild(li);
-                cnt+=1;
-           });
-
-           const p_num=document.getElementById("playersNum");
-           p_num.innerHTML="Graczy w lobby: "+cnt;
-        })
-        /*
-        async function whatRoundIs()
-        {
-            const res=await fetch("/whoseRound")
-            const data=await res.json()
-            if(data.yourId==0&&!document.getElementById("start"))
-            {
-                start=document.createElement("button");
-                start.textContent="Zacznij";
-                start.id="start";
-                start.type="submit";
-                start.name="action";
-                start.value="started";
-                start.className="btn";
-
-                form=document.getElementById("startButton");
-                form.appendChild(start);
-            }
-            if(data.round!=-1)
-            {
-                window.location.href="/wait";
-            }
-        }
-        async function updatePlayers() {
-           const res=await fetch("/players");
-           const data=await res.json();
-           const list=document.getElementById("players");
-           list.innerHTML=""
-           var cnt=0;
-           data.forEach(function(player)
-           {
-                const li=document.createElement("li");
-                if(cnt==0)
-                    li.textContent=player.nickname+" - "+player.credits+" (admin)";
-                else
-                    li.textContent=player.nickname+" - "+player.credits;
-                list.appendChild(li);
-                cnt+=1;
-           });
-           const p_num=document.getElementById("playersNum");
-           p_num.innerHTML="Graczy w lobby: "+cnt;
-           whatRoundIs();
-        }
-
-        setInterval(updatePlayers, 1000);
-        updatePlayers();
-        */
-    </script>
+    <script src="/static/js/socket.js"></script>
+    <script src="/static/js/lobby.js"></script>
+    
     <a style="display: block;"> Gracz, który jako pierwszy dołączył do lobby to admin. </a>
     <a style="display: block;"> Jako jedyny może on rozpocząć grę, a także wybrać zwycięzcę. </a>
 </body>
