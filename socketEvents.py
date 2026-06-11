@@ -103,3 +103,12 @@ def playersList():
         playersList.append(player.to_dict())
 
     socketio.emit("playersList", playersList)
+
+@socketio.on("amIAdmin")
+def amIAdmin():
+    yes = False
+    if session.get("ID") == 0:
+        yes = True
+    print(yes)
+    socketio.emit("areYouAdmin", {"yes" : yes}, to=request.sid)
+

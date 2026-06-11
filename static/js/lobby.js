@@ -7,6 +7,7 @@ socket.on("checkState", (data) => {
     if(window.location.pathname != target) {
         window.location.href = target;
     } else {
+        socket.emit("amIAdmin");
         socket.emit("playersListRequest");
     }
 });
@@ -29,4 +30,22 @@ socket.on("playersList", (data) => {
 
     const p_num=document.getElementById("playersNum");
     p_num.innerHTML="Graczy w lobby: "+cnt;
+})
+
+socket.on("areYouAdmin", (data) => {
+    if (data.yes == true) {
+        const start=document.createElement("button");
+        
+        start.textContent="Zacznij";
+        start.id="start";
+        start.type="submit";
+        start.className="btn";
+
+        start.onclick=function() {
+            console.log("Kliknięto mnie");
+        };
+
+        const form=document.getElementById("startButton");
+        form.appendChild(start);
+    }
 })

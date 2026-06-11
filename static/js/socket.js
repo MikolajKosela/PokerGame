@@ -2,7 +2,7 @@ const socket = io();
 
 socket.on("connect", () => {
     socket.emit("handshake", {
-    token : localStorage.getItem("token"),
+        token : localStorage.getItem("token"),
     });
     socket.emit("checkStateRequest");
 });
