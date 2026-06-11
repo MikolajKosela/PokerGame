@@ -21,7 +21,7 @@
             socket.emit("handshake", {
                 token : localStorage.getItem("token"),
             });
-            //socket.emit("checkStateRequest");
+            socket.emit("checkStateRequest");
         });
 
         socket.on("handshakeAnswer", (data) => {
@@ -34,7 +34,7 @@
 
         socket.on("checkState", (data) => {
             const target = data.state;
-            if(window.location.pahtname != target) {
+            if(window.location.pathname != target) {
                 window.location.href = target;
             }
         });

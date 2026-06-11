@@ -11,6 +11,7 @@ Next clone this repository, run venv and set up a server.
 ```bash
 git clone https://github.com/MikolajKosela/PokerGame
 python3 -m venv venv
+pip install flask flask-socketio
 source venv/bin/activate
 python3 app.py
 ```

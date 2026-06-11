@@ -69,13 +69,6 @@ def checkState():
     # 3 - wait
     # 4 - end
 
-    '''
-    if playerExist == False and curID != None:
-        session.clear()
-        curID = None
-        nickname = None
-    '''
-
     if curID == None:
         state = "/"
     elif game.isEnd == True:

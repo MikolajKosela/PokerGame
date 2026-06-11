@@ -23,7 +23,7 @@
         socket.emit("handshake", {
           token : localStorage.getItem("token"),
         });
-        //socket.emit("checkStateRequest");
+        socket.emit("checkStateRequest");
       });
 
       socket.on("handshakeAnswer", (data) => {
