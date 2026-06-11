@@ -43,8 +43,6 @@ def wait():
     player_id = session.get("ID")
     return render_template("wait.html")
 
-
-
 @app.route("/whoseRound")
 def whoseRound():
     if game.whoseRoundIs >= 0:
@@ -109,17 +107,6 @@ def start():
 
 @app.route("/lobby", methods=["GET", "POST"])
 def lobby():
-    '''
-    print("jestem w lobby")
-    nickname = session.get("nickname")
-
-    if request.method == "POST":
-        game.start()
-        if session.get("ID") == game.whoseRoundIs:
-            return redirect(url_for("action"))
-        else:
-            return redirect(url_for("wait"))
-    '''
     return render_template("lobby.html")
 
 

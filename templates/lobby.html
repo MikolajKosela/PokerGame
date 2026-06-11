@@ -13,10 +13,13 @@
 
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script>
+        const welcome=document.getElementById("welcome");
+        let nickname=localStorage.getItem("nickname");
+        welcome.innerHTML="Witaj "+nickname;
+
         const socket = io();
 
         socket.on("connect", () => {
-
             console.log(localStorage.getItem("token"));
             socket.emit("handshake", {
                 token : localStorage.getItem("token"),
@@ -38,13 +41,29 @@
             if(window.location.pathname != target) {
                 window.location.href = target;
             } else {
-                const welcome=document.getElementById("welcome");
-                let nickname=localStorage.getItem("nickname");
-                welcome.innerHTML="Witaj "+nickname;
+                socket.emit("playersListRequest");
             }
         });
 
-        socket.on("lobby")
+        socket.on("playersList", (data) => {
+           const list=document.getElementById("players");
+           list.innerHTML=""
+           var cnt=0;
+
+           data.forEach(function(player)
+           {
+                const li=document.createElement("li");
+                if(cnt==0)
+                    li.textContent=player.nickname+" - "+player.credits+" (admin)";
+                else
+                    li.textContent=player.nickname+" - "+player.credits;
+                list.appendChild(li);
+                cnt+=1;
+           });
+
+           const p_num=document.getElementById("playersNum");
+           p_num.innerHTML="Graczy w lobby: "+cnt;
+        })
         /*
         async function whatRoundIs()
         {
