@@ -5,7 +5,7 @@
     <title>Poker online</title>
 </head>
 <body>
-    <h1>Witaj {{nickname}} </h1>
+    <h1 id = "welcome">Witaj ...</h1>
     <h2 id="playersNum"></h2>
     <ul id="players"></ul>
     <form method="POST" id="startButton">
@@ -29,6 +29,7 @@
             console.log(ok);
             if (ok == false) {
                 localStorage.clear("token");
+                localStorage.clear("nickname");
             }
         })
 
@@ -36,9 +37,14 @@
             const target = data.state;
             if(window.location.pathname != target) {
                 window.location.href = target;
+            } else {
+                const welcome=document.getElementById("welcome");
+                let nickname=localStorage.getItem("nickname");
+                welcome.innerHTML="Witaj "+nickname;
             }
         });
 
+        socket.on("lobby")
         /*
         async function whatRoundIs()
         {

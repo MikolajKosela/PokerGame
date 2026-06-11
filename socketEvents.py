@@ -96,4 +96,11 @@ def join(data):
 
     socketio.emit("joined", {"token": grantToken()}, to=request.sid)
 
-
+@socketio.on("lobbyRequest")
+def lobby():
+    playersNum = game.playersNum
+    admin = game.players[0].nickname
+    socketio.emit("lobby", {
+        "playersNum" : playersNum, 
+        "admin" : admin
+        })

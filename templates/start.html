@@ -31,6 +31,7 @@
         console.log(ok);
         if (ok == false) {
           localStorage.clear("token");
+          localStorage.clear("nickname");
         }
       })
 
@@ -47,8 +48,11 @@
       });
 
       function join() {
+        let nickname = document.getElementById("nickname").value;
+        localStorage.setItem("nickname", nickname);
+
         socket.emit("join", {
-          nickname: document.getElementById("nickname").value,
+          nickname : nickname
         });
       }
     </script>
