@@ -1,17 +1,23 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}?v=1"
+      href="/static/css/style.css"
     />
-
+    
     <title>Poker online</title>
   </head>
   <body>
     <h1>Twoja runda</h1>
     <h2>Wspólne karty</h2>
     <ul id="commonCards"></ul>
+    
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="/static/js/socket.js"></script>
+    <script src="/static/js/action.js"></script>
+
     <script>
       async function printCommonCards() {
         const res = await fetch("/commonCards");

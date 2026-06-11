@@ -16,14 +16,6 @@ from flask import (
 from flask_socketio import SocketIO, emit
 import random
 
-@app.route("/players")
-def get_players():
-    players_list = []
-    for player in game.players:
-        players_list.append(player.to_dict())
-    return jsonify(players_list)
-
-
 @app.route("/commonCards")
 def commonCards():
     tem = game.tables[-1]
@@ -34,14 +26,6 @@ def commonCards():
 def yourCards():
     tem = game.tables[session.get("ID")]
     return jsonify(tem.to_dict())
-
-
-@app.route("/wait")
-def wait():
-    if game.whoseRoundIs == -1:
-        return redirect(url_for("lobby"))
-    player_id = session.get("ID")
-    return render_template("wait.html")
 
 @app.route("/whoseRound")
 def whoseRound():
@@ -112,6 +96,7 @@ def lobby():
 
 @app.route("/action", methods=["POST", "GET"])
 def action():
+    '''
     if request.method == "POST":
         action = request.form.get("action")
         if action == "continue":
@@ -131,11 +116,22 @@ def action():
         elif action == "allin":
             game.allin()
         return redirect(url_for("wait"))
-    return render_template("action.html", roundNum=game.roundNum)
+    '''
+    return render_template("action.html")
 
+
+@app.route("/wait")
+def wait():
+    '''
+    if game.whoseRoundIs == -1:
+        return redirect(url_for("lobby"))
+    player_id = session.get("ID")
+    '''
+    return render_template("wait.html")
 
 @app.route("/end", methods=["GET", "POST"])
 def end():
+    '''
     state = checkState(4)
     if state is not None:
         return state
@@ -154,3 +150,6 @@ def end():
     if game.isEnd == True:
         return render_template("end.html")
     return redirect(url_for("start"))
+    '''
+
+    return render_template("end.html")

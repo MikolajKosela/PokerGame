@@ -81,7 +81,6 @@ def checkState():
     print("Dostałem zapytanie, wysyłam", state)
     socketio.emit("checkState", {"state": state}, to=request.sid)
 
-
 @socketio.on("join")
 def join(data):
     state = checkState()
@@ -111,4 +110,16 @@ def amIAdmin():
         yes = True
     print(yes)
     socketio.emit("areYouAdmin", {"yes" : yes}, to=request.sid)
+
+@socketio.on("commonCardsRequest")
+def commonCardsRequest():
+    cards = game.tables[-1]
+    socketio.emit("commonCards", cards.to_dict(), to=request.sid)
+
+
+@socketio.on("playersCardsRequest")
+def cardsRequest():
+    cards = game.tables[session.get("ID")]
+
+    socketio.emit("playersCards", cards.to_dict(), to=request.sid)
 
