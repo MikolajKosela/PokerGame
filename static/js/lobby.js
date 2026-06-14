@@ -42,10 +42,14 @@ socket.on("areYouAdmin", (data) => {
         start.className="btn";
 
         start.onclick=function() {
-            console.log("Kliknięto mnie");
+            socket.emit("startGame");
         };
 
         const form=document.getElementById("startButton");
         form.appendChild(start);
     }
+})
+
+socket.on("started", () => {
+    socket.emit("checkStateRequest");
 })

@@ -97,9 +97,7 @@ def join(data):
 
 @socketio.on("playersListRequest")
 def playersList():
-    playersList = []
-    for player in game.players:
-        playersList.append(player.to_dict())
+    playersList = [player.to_dict() for player in game.players]
 
     socketio.emit("playersList", playersList)
 
@@ -111,15 +109,50 @@ def amIAdmin():
     print(yes)
     socketio.emit("areYouAdmin", {"yes" : yes}, to=request.sid)
 
-@socketio.on("commonCardsRequest")
-def commonCardsRequest():
-    cards = game.tables[-1]
-    socketio.emit("commonCards", cards.to_dict(), to=request.sid)
+@socketio.on("startGame")
+def startGame():
+    if session.get("ID") == 0:
+        game.start()
+    socketio.emit("started")
+    
 
+@socketio.on("gameDataRequest")
+def gameDataRequest():
+    myID = session.get("ID")
+    myData = game.players[myID]
 
-@socketio.on("playersCardsRequest")
-def cardsRequest():
-    cards = game.tables[session.get("ID")]
+    commonCards = game.tables[-1].to_dict()
+    playerCards = game.tables[myID].to_dict()
 
-    socketio.emit("playersCards", cards.to_dict(), to=request.sid)
+    currentlyPlaying = game.whoseRoundIs
+    curPlayerData = game.players[currentlyPlaying]
 
+    roundData = {
+        "curID": currentlyPlaying,
+        "curNick": curPlayerData.nickname,
+        "curCredit": curPlayerData.credits,
+        "pot": game.pot, 
+        "bet": game.bet - myData.bet,
+        "roundNum": game.roundNum,
+        "yourBet": myData.bet,
+    }
+
+    buttons = {
+        "check": myData.allin or game.bet == myData.bet,
+        "bet": not myData.allin and game.roundNum % 2 == 0 and game.bet == 0,
+        "call": not myData.allin and game.bet > myData.bet,
+        "raise": not myData.allin and game.roundNum % 2 == 0 and game.bet > 0,
+        "fold": not myData.allin, 
+        "allin": myData.credits > 0 and game.roundNum % 2 == 0
+    }
+
+    players = [player.to_dict() for player in game.players]
+    
+    data = {
+        "commonCards": commonCards,
+        "playerCards": playerCards,
+        "roundData": roundData,
+        "buttons": buttons,
+        "players": players
+    }
+    socketio.emit("gameData", data)

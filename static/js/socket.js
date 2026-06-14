@@ -13,5 +13,5 @@ socket.on("handshakeAnswer", (data) => {
     if (ok == false) {
         localStorage.clear("token");
         localStorage.clear("nickname");
-}
+    }
 })

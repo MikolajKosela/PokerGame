@@ -16,17 +16,6 @@ from flask import (
 from flask_socketio import SocketIO, emit
 import random
 
-@app.route("/commonCards")
-def commonCards():
-    tem = game.tables[-1]
-    return jsonify(tem.to_dict())
-
-
-@app.route("/yourCards")
-def yourCards():
-    tem = game.tables[session.get("ID")]
-    return jsonify(tem.to_dict())
-
 @app.route("/whoseRound")
 def whoseRound():
     if game.whoseRoundIs >= 0:
@@ -151,5 +140,4 @@ def end():
         return render_template("end.html")
     return redirect(url_for("start"))
     '''
-
     return render_template("end.html")
