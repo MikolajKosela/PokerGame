@@ -97,7 +97,7 @@ input[type="number"] {
 }
 
 .cont {
-  display: inline-block;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0;
@@ -122,6 +122,10 @@ input[type="number"] {
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
   border-right: 1px solid #5a2e0d;
+}
+
+.hidden {
+  display: none;
 }
 
 /*

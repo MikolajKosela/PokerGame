@@ -8,7 +8,6 @@ socket.on("checkState", (data) => {
 });
 
 socket.on("gameData", (data) => {
-    //console.log(data);
     const roundData = data.roundData;
     const buttons = data.buttons;
     const commonCards = data.commonCards;
@@ -91,12 +90,15 @@ socket.on("gameData", (data) => {
         }
         playerCardsList.appendChild(li);
     }
-    
+
     const pot = document.getElementById("pot");
     pot.innerHTML = "Całkowita pula wynosi: " + roundData.pot;
     const credits = document.getElementById("credits");
     credits.innerHTML =
         "Twoje żetony " + roundData.curCredit + " Do wyrównania: " + roundData.bet;
+
+    const callBut = document.getElementById("call");
+    callBut.innerHTML = "Sprawdź ( " + roundData.bet + " )";
     
 
     const playersList = document.getElementById("players");
