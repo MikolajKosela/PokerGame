@@ -156,3 +156,80 @@ def gameDataRequest():
         "players": players
     }
     socketio.emit("gameData", data)
+
+@socketio.on("check")
+def check():
+    print("check")
+
+    myData = game.players[session.get("ID")]
+    if not(myData.allin or game.bet == myData.bet):
+        socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+    
+    game.check()
+    socketio.emit("actionMade", to=request.sid)
+
+@socketio.on("bet")
+def bet(data):
+    amount = data["amount"]
+    amount = str(amount)
+    amount = int(amount)
+    print("bet: ", amount)
+
+    myData = game.players[session.get("ID")]
+
+    if not(not myData.allin and game.roundNum % 2 == 0 and game.bet == 0):
+        socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+
+
+    game.makeBet(amount)
+    socketio.emit("actionMade", to=request.sid)
+
+@socketio.on("call")
+def call():
+    print("call")
+
+    myData = game.players[session.get("ID")]
+    if not(not myData.allin and game.bet > myData.bet):
+        socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+    
+    game.call()
+    socketio.emit("actionMade", to=request.sid)
+
+@socketio.on("raise")
+def raiseBet(data):
+    amount = data["amount"]
+    amount = str(amount)
+    amount = int(amount)
+    print("raise: ", amount)
+
+    myData = game.players[session.get("ID")]
+
+    if not(not myData.allin and game.roundNum % 2 == 0 and game.bet > 0):
+        socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+
+    game.raiseBet(amount)
+    socketio.emit("actionMade", to=request.sid)
+
+@socketio.on("fold")
+def fold():
+    print("fold")
+
+    myData = game.players[session.get("ID")]
+
+    if not(not myData.allin):
+        socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+    
+    game.fold()
+    socketio.emit("actionMade", to=request.sid)
+
+@socketio.on("allin")
+def allin():
+    print("allin")
+
+    myData = game.players[session.get("ID")]
+
+    if not(myData.credits > 0 and game.roundNum % 2 == 0):
+        socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+    
+    game.allin()
+    socketio.emit("actionMade", to=request.sid)

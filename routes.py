@@ -85,37 +85,11 @@ def lobby():
 
 @app.route("/action", methods=["POST", "GET"])
 def action():
-    '''
-    if request.method == "POST":
-        action = request.form.get("action")
-        if action == "continue":
-            game.nextPlayer()
-        elif action == "check":
-            game.check()
-        elif action == "bet":
-            amount = int(request.form.get("betValue", 0))
-            game.makeBet(amount)
-        elif action == "call":
-            game.call()
-        elif action == "raise":
-            amount = int(request.form.get("raiseValue", 0))
-            game.raiseBet(amount)
-        elif action == "fold":
-            game.fold()
-        elif action == "allin":
-            game.allin()
-        return redirect(url_for("wait"))
-    '''
     return render_template("action.html")
 
 
 @app.route("/wait")
 def wait():
-    '''
-    if game.whoseRoundIs == -1:
-        return redirect(url_for("lobby"))
-    player_id = session.get("ID")
-    '''
     return render_template("wait.html")
 
 @app.route("/end", methods=["GET", "POST"])
