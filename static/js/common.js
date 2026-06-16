@@ -1,16 +1,26 @@
 function updateRound(data) {
     const pot = document.getElementById("pot");
-    pot.innerHTML = "Całkowita pula wynosi: " + data.pot;
+    if (pot != null) {
+        pot.innerHTML = "Całkowita pula wynosi: " + data.pot;
+    }
+
     const credits = document.getElementById("credits");
-    credits.innerHTML =
-        "Twoje żetony " + data.curCredit + " Do wyrównania: " + data.bet;
+    if (credits != null) {
+        credits.innerHTML =
+         "Twoje żetony " + data.curCredit + " Do wyrównania: " + data.bet;
+    }
 
     const callBut = document.getElementById("call");
-    callBut.innerHTML = "Sprawdź ( " + data.bet + " )";
+    if (callBut != null) {
+        callBut.innerHTML = "Sprawdź ( " + data.bet + " )";
+    }
 }
 
 function updateCommonCards(data) {
     const commonCardsList = document.getElementById("commonCards");
+    if (commonCardsList == null) {
+        return;
+    }
     commonCardsList.innerHTML='';
 
     for(const card of data.cards) {
@@ -52,6 +62,9 @@ function updateCommonCards(data) {
 
 function updatePlayerCards(data) {
     const playerCardsList = document.getElementById("yourCards");
+    if (playerCardsList == null) {
+        return;
+    }
     playerCardsList.innerHTML='';
 
     for(const card of data.cards) {
@@ -93,6 +106,9 @@ function updatePlayerCards(data) {
 
 function updatePlayers(data) {
     const playersList = document.getElementById("players");
+    if (playersList == null) {
+        return;
+    }
     playersList.innerHTML = '';
 
     for(const player of data) {

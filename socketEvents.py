@@ -155,7 +155,7 @@ def gameDataRequest():
         "buttons": buttons,
         "players": players
     }
-    socketio.emit("gameData", data)
+    socketio.emit("gameData", data, to=request.sid)
 
 @socketio.on("check")
 def check():
@@ -164,9 +164,11 @@ def check():
     myData = game.players[session.get("ID")]
     if not(myData.allin or game.bet == myData.bet):
         socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+        return False
     
     game.check()
-    socketio.emit("actionMade", to=request.sid)
+    socketio.emit("actionMade")
+    return True
 
 @socketio.on("bet")
 def bet(data):
@@ -179,10 +181,12 @@ def bet(data):
 
     if not(not myData.allin and game.roundNum % 2 == 0 and game.bet == 0):
         socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+        return False
 
 
     game.makeBet(amount)
-    socketio.emit("actionMade", to=request.sid)
+    socketio.emit("actionMade")
+    return True
 
 @socketio.on("call")
 def call():
@@ -191,9 +195,11 @@ def call():
     myData = game.players[session.get("ID")]
     if not(not myData.allin and game.bet > myData.bet):
         socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+        return False
     
     game.call()
-    socketio.emit("actionMade", to=request.sid)
+    socketio.emit("actionMade")
+    return True
 
 @socketio.on("raise")
 def raiseBet(data):
@@ -206,9 +212,11 @@ def raiseBet(data):
 
     if not(not myData.allin and game.roundNum % 2 == 0 and game.bet > 0):
         socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+        return False
 
     game.raiseBet(amount)
-    socketio.emit("actionMade", to=request.sid)
+    socketio.emit("actionMade")
+    return True
 
 @socketio.on("fold")
 def fold():
@@ -218,9 +226,11 @@ def fold():
 
     if not(not myData.allin):
         socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+        return False
     
     game.fold()
-    socketio.emit("actionMade", to=request.sid)
+    socketio.emit("actionMade")
+    return True
 
 @socketio.on("allin")
 def allin():
@@ -230,6 +240,8 @@ def allin():
 
     if not(myData.credits > 0 and game.roundNum % 2 == 0):
         socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+        return False
     
     game.allin()
-    socketio.emit("actionMade", to=request.sid)
+    socketio.emit("actionMade")
+    return True
