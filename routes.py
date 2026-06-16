@@ -16,43 +16,6 @@ from flask import (
 from flask_socketio import SocketIO, emit
 import random
 
-@app.route("/whoseRound")
-def whoseRound():
-    if game.whoseRoundIs >= 0:
-        roundData = {
-            "yourId": session.get("ID"),
-            "round": game.whoseRoundIs,
-            "playerName": game.players[game.whoseRoundIs].nickname,
-            "playerCredit": game.players[game.whoseRoundIs].credits,
-            "pot": game.pot,
-            "bet": game.bet - game.players[session.get("ID")].bet,
-            "checkButton": game.players[session.get("ID")].allin
-            or game.bet == game.players[session.get("ID")].bet,
-            "betButton": not game.players[session.get("ID")].allin
-            and game.roundNum % 2 == 0
-            and game.bet == 0,
-            "callButton": not game.players[session.get("ID")].allin
-            and game.bet > game.players[session.get("ID")].bet,
-            "raiseButton": not game.players[session.get("ID")].allin
-            and game.roundNum % 2 == 0
-            and game.bet > 0,
-            "foldButton": not game.players[session.get("ID")].allin and True,
-            "allinButton": game.roundNum % 2 == 0
-            and game.players[session.get("ID")].credits > 0,
-            "playerBet": game.players[session.get("ID")].bet,
-            "roundNum": game.roundNum,
-            "allin": game.players[session.get("ID")].allin,
-        }
-        return jsonify(roundData)
-    else:
-        roundData = {
-            "yourId": session.get("ID"),
-            "round": game.whoseRoundIs,
-            "pot": game.pot,
-        }
-        return jsonify(roundData)
-
-
 @app.route("/summary")
 def sumarry():
     if game.isEnd == True:

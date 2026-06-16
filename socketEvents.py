@@ -124,13 +124,13 @@ def gameDataRequest():
     commonCards = game.tables[-1].to_dict()
     playerCards = game.tables[myID].to_dict()
 
-    currentlyPlaying = game.whoseRoundIs
-    curPlayerData = game.players[currentlyPlaying]
+    #currentlyPlaying = game.whoseRoundIs
+    #curPlayerData = game.players[currentlyPlaying]
 
     roundData = {
-        "curID": currentlyPlaying,
-        "curNick": curPlayerData.nickname,
-        "curCredit": curPlayerData.credits,
+        #"curID": currentlyPlaying,
+        #"curNick": curPlayerData.nickname,
+        "curCredit": myData.credits,
         "pot": game.pot, 
         "bet": game.bet - myData.bet,
         "roundNum": game.roundNum,
