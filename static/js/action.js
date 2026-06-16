@@ -11,9 +11,12 @@ socket.on("checkState", (data) => {
 
 socket.on("gameData", (data) => {
   processGameData(data);
+  updateButtons(data.buttons)
 })
 
 function changeValue(where, howMuch) {
+  console.log(where, howMuch);
+
   const target = document.getElementById(where);
   let value = parseInt(target.value) || 1;
   value += howMuch;
@@ -57,4 +60,58 @@ function fold() {
 function allin() {
   console.log("allin");
   socket.emit("allin");
+}
+
+function updateButtons(data) {
+  console.log(data);
+  const checkBut = document.getElementById("check");
+
+  const betCont = document.getElementById("betCont");
+  const betBut = document.getElementById("bet");
+  const betMinus = document.getElementById("betMinus");
+  const betPlus = document.getElementById("betPlus");
+
+  const callBut = document.getElementById("call");
+
+  const raiseCont = document.getElementById("raiseCont");
+  const raiseBut = document.getElementById("raise");
+  const raiseMinus = document.getElementById("raiseMinus");
+  const raisePlus = document.getElementById("raisePlus");
+
+  const foldBut = document.getElementById("fold");
+  const allinBut = document.getElementById("allin");
+
+  if (data.check == true) {
+    checkBut.className = "btn";
+    checkBut.addEventListener("click", check);
+  }
+
+  if (data.bet == true) {
+  betCont.className = "cont";
+  betBut.addEventListener("click", bet);
+  betMinus.addEventListener("click", () => changeValue('betValue', -1));
+  betPlus.addEventListener("click", () => changeValue('betValue', 1));
+  }
+
+  if (data.call == true) {
+  callBut.className = "btn";
+  callBut.addEventListener("click", call);
+  }
+
+  if (data.raise == true) {
+  raiseCont.className = "cont";
+  raiseBut.addEventListener("click", raise);
+  raiseMinus.addEventListener("click", () => changeValue('raiseValue', -1));
+  raisePlus.addEventListener("click", () => changeValue('raiseValue', 1));
+  }
+
+  if (data.fold == true) {
+  foldBut.className = "btn";
+  foldBut.addEventListener("click", fold);
+  }
+
+  if (data.allin == true) {
+  allinBut.className = "btn";
+  allinBut.addEventListener("click", allin);
+  }
 }

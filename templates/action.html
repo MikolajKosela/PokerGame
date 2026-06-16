@@ -19,26 +19,26 @@
     <h3 id="pot"></h3>
     <h3 id="credits"></h3>
 
-    <button id="check" class="btn" type="submit" onclick="check()">Czekaj</button>
+    <button id="check" class="hidden" type="submit">Czekaj</button>
 
-    <div class="cont">
-      <button id="bet" class="btnl" type="submit" onclick="bet()">Postaw zakład</button>
+    <div id="betCont" class="hidden">
+      <button id="bet" class="btnl" type="submit">Postaw zakład</button>
       <input id="betValue" class="numInput" type="number" min="1" step="1" value="1">
-      <button id="minus" class="btn" type="button" onclick="changeValue('betValue', -1)">-</button>
-      <button id="plus" class="btnr" type="button" onclick="changeValue('betValue', 1)">+</button>
+      <button id="betMinus" class="btn" type="button">-</button>
+      <button id="betPlus" class="btnr" type="button">+</button>
     </div>
 
-    <button id="call" class="btn" type="submit" onclick="call()">Sprawdź (...)</button>
+    <button id="call" class="hidden" type="submit">Sprawdź (...)</button>
 
-    <div class="cont">
-      <button id="raise" class="btnl" type="submit" onclick="raise()">Podbij</button>
+    <div id="raiseCont" class="hidden">
+      <button id="raise" class="btnl" type="submit">Podbij</button>
       <input id="raiseValue" class="numInput" type="number" min="1" step="1" value="1">
-      <button id="minus" class="btn" type="button" onclick="changeValue('raiseValue', -1)">-</button>
-      <button id="plus" class="btnr" type="button" onclick="changeValue('raiseValue', 1)">+</button>
+      <button id="raiseMinus" class="btn" type="button">-</button>
+      <button id="raisePlus" class="btnr" type="button">+</button>
     </div>
 
-    <button id="fold" class="btn" type="submit" onclick="fold()">Pasuj</button>
-    <button id="allin" class="btn" type="submit" onclick="allin()">ALL IN 🔥🔥🔥</button>
+    <button id="fold" class="hidden" type="submit">Pasuj</button>
+    <button id="allin" class="hidden" type="submit">ALL IN 🔥🔥🔥</button>
 
     <h3>Inni gracze:</h3>
     <ul id="players"></ul>

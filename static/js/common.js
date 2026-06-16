@@ -93,6 +93,8 @@ function updatePlayerCards(data) {
 
 function updatePlayers(data) {
     const playersList = document.getElementById("players");
+    playersList.innerHTML = '';
+
     for(const player of data) {
         console.log(player.id, data.curID);
         if (player.id != data.curID) {
@@ -110,5 +112,4 @@ export function processGameData(data) {
     updateCommonCards(data.commonCards);
     updatePlayerCards(data.playerCards);
     updatePlayers(data.players);
-
 }
