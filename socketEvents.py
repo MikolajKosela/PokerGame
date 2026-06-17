@@ -38,6 +38,23 @@ def checkToken(token):
         return True
     return False 
 
+def summary():
+    if game.isEnd == False:
+        return False
+    summaryData = []
+    for i, player in enumerate(game.players):
+        cards = [card.to_dict() for card in game.tables[i].cards]
+        summaryData.append(
+            {
+                "nickname": player.nickname,
+                "id": player.ID,
+                "fold": player.fold,
+                "credits": player.credits,
+                "cards": cards,
+            }
+        )
+
+    socketio.emit("summary", summaryData)
 
 @socketio.on("handshake")
 def handshake(data):
@@ -155,6 +172,9 @@ def gameDataRequest():
         "buttons": buttons,
         "players": players
     }
+
+    if game.isEnd == True:
+        summary()
     socketio.emit("gameData", data, to=request.sid)
 
 @socketio.on("check")

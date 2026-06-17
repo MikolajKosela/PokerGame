@@ -16,14 +16,14 @@ function updateRound(data) {
     }
 }
 
-function updateCommonCards(data) {
-    const commonCardsList = document.getElementById("commonCards");
-    if (commonCardsList == null) {
+export function drawCards(cards, list) {
+    if (list == null) {
         return;
     }
-    commonCardsList.innerHTML='';
 
-    for(const card of data.cards) {
+    list.innerHTML='';
+
+    for(const card of cards) {
         const li = document.createElement("li");
 
         if (card.visible) {
@@ -56,52 +56,16 @@ function updateCommonCards(data) {
         } else {
             li.innerHTML = "???";
         }
-        commonCardsList.appendChild(li);
+        list.appendChild(li);
     }
 }
 
+function updateCommonCards(data) {
+    drawCards(data.cards, document.getElementById("commonCards"));
+}
+
 function updatePlayerCards(data) {
-    const playerCardsList = document.getElementById("yourCards");
-    if (playerCardsList == null) {
-        return;
-    }
-    playerCardsList.innerHTML='';
-
-    for(const card of data.cards) {
-        const li = document.createElement("li");
-
-        if (card.visible) {
-            let symbol = "?";
-            let color = "?";
-            switch (card.color) {
-                case "Pik":
-                    symbol = "♠";
-                    color = "black";
-                    break;
-                case "Kier":
-                    symbol = "♥";
-                    color = "red";
-                    break;
-                case "Karo":
-                    symbol = "♦";
-                    color = "red";
-                    break;
-
-                case "Trefl":
-                    symbol = "♣";
-                    color = "black";
-                    break;
-                default:
-                    symbol = "undefinded";
-                    color = "undefinded";
-            }
-
-            li.innerHTML = `<span style="color: ${color};">${symbol}</span> ${card.number}`;
-        } else {
-            li.innerHTML = "???";
-        }
-        playerCardsList.appendChild(li);
-    }
+    drawCards(data.cards, document.getElementById("yourCards"));
 }
 
 function updatePlayers(data) {

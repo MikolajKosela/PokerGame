@@ -1,4 +1,5 @@
 import { processGameData } from "./common.js";
+import { drawCards } from "./common.js";
 
 socket.on("checkState", (data) => {
     const target = data.state;
@@ -10,11 +11,37 @@ socket.on("checkState", (data) => {
 });
 
 socket.on("gameData", (data) => {
+  console.log(data);
   processGameData(data);
 });
 
 socket.on("actionMade", () => {
   socket.emit("checkStateRequest");
+})
+
+socket.on("summary", (data) => {
+  console.log("Podsumowanie");
+
+  const container = document.getElementById("summary");
+
+  if (container == null) {
+    return;
+  }
+
+  container.innerHTML = '';
+
+  for(const player of data) {
+    console.log(player);
+    const div = document.createElement("div");
+    div.innerHTML = `<h3>${player.nickname} - ${player.credits}</h3>`;
+
+    const list = document.createElement("ul");
+
+    drawCards(player.cards, list);
+
+    div.appendChild(list);
+    container.appendChild(div);
+  }
 })
 /*
     <script>
