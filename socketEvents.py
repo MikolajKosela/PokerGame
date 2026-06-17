@@ -63,13 +63,17 @@ def handshake(data):
     if checkToken(data["token"]) == True:
         ok = True
 
+    admin = False
+
     if ok == True:
         curID = game.idToPlayer[int(data["token"])]
         session["ID"] = curID
         session["nickname"] = game.players[curID].nickname
         print(session)
+        if curID == 0:
+            admin = True
 
-    socketio.emit("handshakeAnswer", {"ok" : ok}, to=request.sid)
+    socketio.emit("handshakeAnswer", {"ok" : ok, "admin" : admin}, to=request.sid)
 
 @socketio.on("checkStateRequest")
 def checkState():
@@ -118,19 +122,11 @@ def playersList():
 
     socketio.emit("playersList", playersList)
 
-@socketio.on("amIAdmin")
-def amIAdmin():
-    yes = False
-    if session.get("ID") == 0:
-        yes = True
-    print(yes)
-    socketio.emit("areYouAdmin", {"yes" : yes}, to=request.sid)
-
 @socketio.on("startGame")
 def startGame():
     if session.get("ID") == 0:
         game.start()
-    socketio.emit("started")
+        socketio.emit("started")
     
 
 @socketio.on("gameDataRequest")
@@ -265,3 +261,7 @@ def allin():
     game.allin()
     socketio.emit("actionMade")
     return True
+
+@socketio.on("winners")
+def winners(data):
+    print(data)

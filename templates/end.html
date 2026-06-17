@@ -16,10 +16,14 @@
 
     <h2>Karty graczy:</h2>
     <container id = "summary"> 
-
     </container>
-    <a> Tylko admin gry może wybrać zwycięzcę. </a>
 
+    <div id="sendForm" class="hidden">
+    <button id="send" class="btn">Wyślij</button>
+    </div>
+
+    <a> Tylko admin może wybrać zwycięzcę. </a>
+    
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="/static/js/socket.js"></script>
     <script src="/static/js/end.js" type="module"></script>

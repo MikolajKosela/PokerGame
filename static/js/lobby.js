@@ -7,7 +7,9 @@ socket.on("checkState", (data) => {
     if(window.location.pathname != target) {
         window.location.href = target;
     } else {
-        socket.emit("amIAdmin");
+        if (localStorage.getItem("admin") == "true") {
+            document.getElementById("start").className = "btn";
+        }
         socket.emit("playersListRequest");
     }
 });
@@ -32,23 +34,11 @@ socket.on("playersList", (data) => {
     p_num.innerHTML="Graczy w lobby: "+cnt;
 })
 
-socket.on("areYouAdmin", (data) => {
-    if (data.yes == true) {
-        const start=document.createElement("button");
-        
-        start.textContent="Zacznij";
-        start.id="start";
-        start.type="submit";
-        start.className="btn";
-
-        start.onclick=function() {
-            socket.emit("startGame");
-        };
-
-        const form=document.getElementById("startButton");
-        form.appendChild(start);
+function start() {
+    if (localStorage.getItem("admin") == "true") {
+        socket.emit("startGame");
     }
-})
+}
 
 socket.on("started", () => {
     socket.emit("checkStateRequest");

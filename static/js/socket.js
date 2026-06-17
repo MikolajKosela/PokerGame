@@ -9,9 +9,14 @@ socket.on("connect", () => {
 
 socket.on("handshakeAnswer", (data) => {
     const ok = data.ok;
+
     console.log(ok);
+
     if (ok == false) {
         localStorage.clear("token");
         localStorage.clear("nickname");
+        localStorage.clear("admin");
+    } else {
+        localStorage.setItem("admin", data.admin);
     }
 })
