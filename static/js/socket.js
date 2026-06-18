@@ -4,7 +4,6 @@ socket.on("connect", () => {
     socket.emit("handshake", {
         token : localStorage.getItem("token"),
     });
-    socket.emit("checkStateRequest");
 });
 
 socket.on("handshakeAnswer", (data) => {
@@ -19,4 +18,5 @@ socket.on("handshakeAnswer", (data) => {
     } else {
         localStorage.setItem("admin", data.admin);
     }
+    socket.emit("checkStateRequest");
 })

@@ -19,6 +19,7 @@ from app import *
 socketio = SocketIO(app)
 
 def grantToken():
+    print("            przyznaje token")
     id = random.randint(1000, 100000)
     while id in game.idToPlayer.keys():
         id = random.randint(1000, 100000)
@@ -79,14 +80,14 @@ def handshake(data):
 def checkState():
     nickname = session.get("nickname")
     curID = session.get("ID")
-    playerExist = False
 
-    state = 0
+    state = "/"
     # 0 - start
     # 1 - lobby
     # 2 - action
     # 3 - wait
     # 4 - end
+    print (curID, game.isEnd, game.whoseRoundIs)
 
     if curID == None:
         state = "/"
@@ -104,16 +105,13 @@ def checkState():
 
 @socketio.on("join")
 def join(data):
-    state = checkState()
-    if state is not None:
-        return state
-
     nickname = data["nickname"]
     session["nickname"] = nickname
     session["ID"] = len(game.players)
     game.players.append(Player(nickname, 99, len(game.players)))
     game.playersNum = len(game.players)
 
+    print("Dołączył gracz")
     socketio.emit("joined", {"token": grantToken()}, to=request.sid)
 
 @socketio.on("playersListRequest")
@@ -131,35 +129,57 @@ def startGame():
 
 @socketio.on("gameDataRequest")
 def gameDataRequest():
+    myID = None
+    myData = None
+    curID = None
+    curNick = None
+    playersNum = None
+    pot = None 
+    bet = None 
+    roundNum = None
+    yourBet = None
+    yourCredits = None 
+
+    commonCards = None 
+    playerCards = None
+    roundData = None 
+    players = None 
+    buttons = None 
+
     myID = session.get("ID")
-    myData = game.players[myID]
+    playersNum = len(game.players)
 
-    commonCards = game.tables[-1].to_dict()
-    playerCards = game.tables[myID].to_dict()
-
-    #currentlyPlaying = game.whoseRoundIs
-    #curPlayerData = game.players[currentlyPlaying]
+    if (game.whoseRoundIs >= 0 or game.isEnd) and myID != None:
+        myData = game.players[myID]
+        commonCards = game.tables[-1].to_dict()
+        playerCards = game.tables[myID].to_dict()
+        curID = game.whoseRoundIs
+        curNick = game.players[curID].nickname
+        pot = game.pot
+        bet = game.bet - myData.bet
+        roundNum = game.roundNum
+        yourBet = myData.bet
+        yourCredits = myData.credits
+        buttons = {
+            "check": myData.allin or game.bet == myData.bet,
+            "bet": not myData.allin and game.roundNum % 2 == 0 and game.bet == 0,
+            "call": not myData.allin and game.bet > myData.bet,
+            "raise": not myData.allin and game.roundNum % 2 == 0 and game.bet > 0,
+            "fold": not myData.allin, 
+            "allin": myData.credits > 0 and game.roundNum % 2 == 0
+        }
+        players = [player.to_dict() for player in game.players]
 
     roundData = {
-        #"curID": currentlyPlaying,
-        #"curNick": curPlayerData.nickname,
-        "curCredit": myData.credits,
-        "pot": game.pot, 
-        "bet": game.bet - myData.bet,
-        "roundNum": game.roundNum,
-        "yourBet": myData.bet,
+        "curID": curID,
+        "curNick": curNick,
+        "playersNum": playersNum,
+        "pot": pot, 
+        "bet": bet,
+        "roundNum": roundNum,
+        "yourBet": yourBet,
+        "yourCredits": yourCredits,
     }
-
-    buttons = {
-        "check": myData.allin or game.bet == myData.bet,
-        "bet": not myData.allin and game.roundNum % 2 == 0 and game.bet == 0,
-        "call": not myData.allin and game.bet > myData.bet,
-        "raise": not myData.allin and game.roundNum % 2 == 0 and game.bet > 0,
-        "fold": not myData.allin, 
-        "allin": myData.credits > 0 and game.roundNum % 2 == 0
-    }
-
-    players = [player.to_dict() for player in game.players]
     
     data = {
         "commonCards": commonCards,

@@ -16,26 +16,6 @@ from flask import (
 from flask_socketio import SocketIO, emit
 import random
 
-@app.route("/summary")
-def sumarry():
-    if game.isEnd == True:
-        summaryData = []
-        for i, player in enumerate(game.players):
-            cards = [card.to_dict() for card in game.tables[i].cards]
-            summaryData.append(
-                {
-                    "nickname": player.nickname,
-                    "id": player.ID,
-                    "fold": player.fold,
-                    "credits": player.credits,
-                    "cards": cards,
-                }
-            )
-        return jsonify(summaryData)
-    else:
-        return jsonify({"error": "Unauthorized"}), 403
-
-
 @app.route("/", methods=["GET", "POST"])
 def start():
     return render_template("start.html")
@@ -44,7 +24,6 @@ def start():
 @app.route("/lobby", methods=["GET", "POST"])
 def lobby():
     return render_template("lobby.html")
-
 
 @app.route("/action", methods=["POST", "GET"])
 def action():
@@ -57,24 +36,4 @@ def wait():
 
 @app.route("/end", methods=["GET", "POST"])
 def end():
-    '''
-    state = checkState(4)
-    if state is not None:
-        return state
-
-    if request.method == "POST":
-        action = request.form.get("action")
-        if action == "again":
-            if game.pot == 0:
-                return game.again()
-            else:
-                return render_template("end.html")
-        winnerId = int(action)
-        if action != "again" and winnerId >= 0 and winnerId < len(game.players):
-            game.players[winnerId].credits += game.pot
-            game.pot = 0
-    if game.isEnd == True:
-        return render_template("end.html")
-    return redirect(url_for("start"))
-    '''
     return render_template("end.html")

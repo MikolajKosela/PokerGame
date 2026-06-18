@@ -1,4 +1,18 @@
 function updateRound(data) {
+    const curNick = document.getElementById("curNick");
+    if (curNick != null) {
+        curNick.innerHTML = "Trwa runda gracza: " + data.curNick;
+    }
+
+    const playersNum = document.getElementById("playersNum");
+    if (playersNum != null) {
+        if (data.playersNum == 0) {
+            playersNum.innerHTML = "Dołącz do lobby jako pierwszy";
+        } else {
+            playersNum.innerHTML = "W lobby czeka: " + data.playersNum + " graczy";
+        }
+    }
+
     const pot = document.getElementById("pot");
     if (pot != null) {
         pot.innerHTML = "Całkowita pula wynosi: " + data.pot;
@@ -7,7 +21,7 @@ function updateRound(data) {
     const credits = document.getElementById("credits");
     if (credits != null) {
         credits.innerHTML =
-         "Twoje żetony " + data.curCredit + " Do wyrównania: " + data.bet;
+         "Twoje żetony " + data.yourCredits + " Do wyrównania: " + data.bet;
     }
 
     const callBut = document.getElementById("call");
@@ -17,7 +31,7 @@ function updateRound(data) {
 }
 
 export function drawCards(cards, list) {
-    if (list == null) {
+    if (list == null || cards == null) {
         return;
     }
 
@@ -61,11 +75,15 @@ export function drawCards(cards, list) {
 }
 
 function updateCommonCards(data) {
-    drawCards(data.cards, document.getElementById("commonCards"));
+    if (data != null) {
+        drawCards(data.cards, document.getElementById("commonCards"));
+    }
 }
 
 function updatePlayerCards(data) {
-    drawCards(data.cards, document.getElementById("yourCards"));
+    if (data != null) {
+        drawCards(data.cards, document.getElementById("yourCards"));
+    }
 }
 
 function updatePlayers(data) {
