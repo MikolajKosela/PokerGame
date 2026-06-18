@@ -96,6 +96,19 @@ function sendWinners() {
   }
   socket.emit("winners", winners);
 }
+
+socket.on("creditsGranted", () => {
+  socket.emit("gameDataRequest");
+  if (localStorage.getItem("admin") == "true") {
+    const button = document.getElementById("send");
+    button.innerHTML = "Nowe rozdanie";
+    button.addEventListener("click", () => newDeal());
+  }
+})
+
+function newDeal() {
+  socket.emit("newDeal");
+}
 /*
     <script>
       let AmIadmin = false;

@@ -264,4 +264,15 @@ def allin():
 
 @socketio.on("winners")
 def winners(data):
-    print(data)
+    winnersNum = len(data)
+    for player in data:
+        id = int(player)
+        game.players[id].credits += game.pot // winnersNum
+    
+    game.pot %= winnersNum
+    socketio.emit("creditsGranted")
+
+@socketio.on("newDeal")
+def newDeal():
+    game.again()
+    socketio.emit("checkState", {"state": "/wait"})

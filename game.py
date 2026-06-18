@@ -132,6 +132,7 @@ class Game:
         self.tables = []
         self.bet = 1
         self.pack = Pack()
+        self.isEnd = False
         for player in self.players:
             player.bet = 0
             player.allin = False
