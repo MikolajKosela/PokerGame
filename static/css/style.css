@@ -128,6 +128,10 @@ input[type="number"] {
   display: none;
 }
 
+.err {
+  color: #950606
+}
+
 /*
 .cont .btn:hover,
 .cont .numInput:hover {

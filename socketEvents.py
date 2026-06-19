@@ -51,7 +51,6 @@ def summary():
                 "cards": cards,
             }
         )
-
     socketio.emit("summary", summaryData)
 
 def checkState(sid):
@@ -122,11 +121,11 @@ def sendData(sid):
         yourCredits = myData.credits
         buttons = {
             "check": myData.allin or game.bet == myData.bet,
-            "bet": not myData.allin and game.roundNum % 2 == 0 and game.bet == 0,
-            "call": not myData.allin and game.bet > myData.bet,
-            "raise": not myData.allin and game.roundNum % 2 == 0 and game.bet > 0,
+            "bet": not myData.allin and game.roundNum % 2 == 0 and game.bet == 0 and myData.credits > 0,
+            "call": not myData.allin and game.bet > myData.bet and game.bet <= myData.credits,
+            "raise": not myData.allin and game.roundNum % 2 == 0 and game.bet > 0 and myData.credits > game.bet,
             "fold": not myData.allin, 
-            "allin": myData.credits > 0 and game.roundNum % 2 == 0
+            "allin": myData.credits > 0 and (game.roundNum % 2 == 0 or game.bet > myData.credits)
         }
 
     roundData = {
@@ -141,7 +140,7 @@ def sendData(sid):
     }
     
     data = {
-        "sid": sid,
+        #"sid": sid,
         "state": state,
         "commonCards": commonCards,
         "playerCards": playerCards,
@@ -186,7 +185,7 @@ def lobbyUpdateRequest():
 @socketio.on("join")
 def join(data):
     nickname = data["nickname"]
-    game.players.append(Player(nickname, 99, len(game.players), request.sid))
+    game.players.append(Player(nickname, 100, len(game.players), request.sid))
     game.playersNum = len(game.players)
 
     socketio.emit("joined", {"token": grantToken()}, to=request.sid)
@@ -209,7 +208,7 @@ def check():
 
     myData = game.players[game.sidToPlayer[request.sid]]
     if not(myData.allin or game.bet == myData.bet):
-        socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+        socketio.emit("error", {"info": "serwer odrzucił przekazane dane"}, to=request.sid)
         return False
     
     game.check(request.sid)
@@ -225,7 +224,7 @@ def bet(data):
     myData = game.players[game.sidToPlayer[request.sid]]
 
     if not(not myData.allin and game.roundNum % 2 == 0 and game.bet == 0):
-        socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+        socketio.emit("error", {"info": "serwer odrzucił przekazane dane"}, to=request.sid)
         return False
 
     game.makeBet(request.sid, amount)
@@ -237,7 +236,7 @@ def call():
 
     myData = game.players[game.sidToPlayer[request.sid]]
     if not(not myData.allin and game.bet > myData.bet):
-        socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+        socketio.emit("error", {"info": "serwer odrzucił przekazane dane"}, to=request.sid)
         return False
     
     game.call(request.sid)
@@ -253,7 +252,7 @@ def raiseBet(data):
     myData = game.players[game.sidToPlayer[request.sid]]
 
     if not(not myData.allin and game.roundNum % 2 == 0 and game.bet > 0):
-        socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+        socketio.emit("error", {"info": "serwer odrzucił przekazane dane"}, to=request.sid)
         return False
 
     game.raiseBet(request.sid, amount)
@@ -266,7 +265,7 @@ def fold():
     myData = game.players[game.sidToPlayer[request.sid]]
 
     if not(not myData.allin):
-        socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+        socketio.emit("error", {"info": "serwer odrzucił przekazane dane"}, to=request.sid)
         return False
     
     game.fold(request.sid)
@@ -279,7 +278,7 @@ def allin():
     myData = game.players[game.sidToPlayer[request.sid]]
 
     if not(myData.credits > 0 and game.roundNum % 2 == 0):
-        socketio.emit("checkState", {"state": "/action"}, to=request.sid)
+        socketio.emit("error", {"info": "serwer odrzucił przekazane dane"}, to=request.sid)
         return False
     
     game.allin(request.sid)

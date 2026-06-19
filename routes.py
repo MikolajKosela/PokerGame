@@ -1,39 +1,22 @@
 from app import app
-from card import Card
-from pack import Pack
-from table import Table
-from player import Player
-from game import Game
-from flask import (
-    Flask,
-    request,
-    render_template,
-    url_for,
-    redirect,
-    jsonify,
-    session,
-)
-from flask_socketio import SocketIO, emit
-import random
+from flask import render_template
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def start():
     return render_template("start.html")
 
-
-@app.route("/lobby", methods=["GET", "POST"])
+@app.route("/lobby")
 def lobby():
     return render_template("lobby.html")
 
-@app.route("/action", methods=["POST", "GET"])
+@app.route("/action")
 def action():
     return render_template("action.html")
-
 
 @app.route("/wait")
 def wait():
     return render_template("wait.html")
 
-@app.route("/end", methods=["GET", "POST"])
+@app.route("/end")
 def end():
     return render_template("end.html")

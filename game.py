@@ -124,10 +124,11 @@ class Game:
         playerData = self.players[self.sidToPlayer[sid]]
         playerData.allin = True
         amount = playerData.credits
+        cost = self.bet - playerData.bet
         playerData.credits = 0
         playerData.bet += amount
         self.pot += amount
-        self.bet += amount
+        self.bet += amount - cost
         return self.nextPlayer()
 
     def again(self):

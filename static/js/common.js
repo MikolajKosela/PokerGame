@@ -106,12 +106,15 @@ export function checkState(data, where) {
 }
 
 export function processGameData(data, where) {
+    console.log(data);
     if (checkState(data, where) == 0) {
         window.location.href = data.state;
+        return 0;
     } else {
         updateRound(data.roundData);
         updateCommonCards(data.commonCards);
         updatePlayerCards(data.playerCards);
         updatePlayers(data.players);
+        return 1;
     }
 }

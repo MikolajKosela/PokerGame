@@ -22,3 +22,10 @@ socket.on("handshakeAnswer", (data) => {
     }
     socket.emit("gameDataRequest");
 })
+
+socket.on("error", (data) => {
+    const info = document.getElementById("errorInfo");
+    if (info != null) {
+        info.innerHTML = data.info;
+    }
+})

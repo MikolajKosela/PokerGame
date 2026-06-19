@@ -18,8 +18,9 @@ function initActions() {
 }
 
 socket.on("gameData", (data) => {
-  processGameData(data, window.location.pathname);
-  updateButtons(data.buttons);
+  if (processGameData(data, window.location.pathname) == 1) {
+    updateButtons(data.buttons);
+  }
 })
 
 function changeValue(where, howMuch) {
