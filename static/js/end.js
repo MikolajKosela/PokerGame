@@ -1,23 +1,10 @@
 import { processGameData } from "./common.js";
 import { drawCards } from "./common.js";
 
-socket.on("checkState", (data) => {
-    const target = data.state;
-    if(window.location.pathname != target) {
-        window.location.href = target;
-    } else {
-        socket.emit("gameDataRequest");
-    }
-});
-
 socket.on("gameData", (data) => {
   console.log(data);
-  processGameData(data);
+  processGameData(data, window.location.pathname);
 });
-
-socket.on("actionMade", () => {
-  socket.emit("checkStateRequest");
-})
 
 const players = new Map();
 

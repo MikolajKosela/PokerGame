@@ -4,17 +4,6 @@ function updateRound(data) {
         curNick.innerHTML = "Trwa runda gracza: " + data.curNick;
     }
 
-    const playersNum = document.getElementById("playersNum");
-    if (playersNum != null) {
-        if (data.playersNum == 0) {
-            playersNum.innerHTML = "Dołącz do lobby jako pierwszy";
-        } else if (data.playersNum == 1) {
-            playersNum.innerHTML = "W lobby czeka: " + data.playersNum + " gracz";
-        } else {
-            playersNum.innerHTML = "W lobby czeka: " + data.playersNum + " graczy";
-        }
-    }
-
     const pot = document.getElementById("pot");
     if (pot != null) {
         pot.innerHTML = "Całkowita pula wynosi: " + data.pot;
@@ -108,9 +97,21 @@ function updatePlayers(data) {
     }
 }
 
-export function processGameData(data) {
-    updateRound(data.roundData);
-    updateCommonCards(data.commonCards);
-    updatePlayerCards(data.playerCards);
-    updatePlayers(data.players);
+export function checkState(data, where) {
+    console.log("Gdzie jestem: ", where, "Gdzie mam być: ", data.state);
+    if (where != data.state) {
+        return 0;
+    }
+    return 1;
+}
+
+export function processGameData(data, where) {
+    if (checkState(data, where) == 0) {
+        window.location.href = data.state;
+    } else {
+        updateRound(data.roundData);
+        updateCommonCards(data.commonCards);
+        updatePlayerCards(data.playerCards);
+        updatePlayers(data.players);
+    }
 }

@@ -1,17 +1,25 @@
 import { processGameData } from "./common.js";
 
-socket.on("checkState", (data) => {
-    const target = data.state;
-    if(window.location.pathname != target) {
-        window.location.href = target;
-    } else {
-        socket.emit("gameDataRequest");
-    }
-});
+initActions();
+
+function initActions() {
+  document.getElementById("check").addEventListener("click", check);
+  document.getElementById("bet").addEventListener("click", bet);
+  document.getElementById("call").addEventListener("click", call);
+  document.getElementById("fold").addEventListener("click", fold);
+  document.getElementById("raise").addEventListener("click", raise);
+  document.getElementById("allin").addEventListener("click", allin);
+
+  document.getElementById("betMinus").addEventListener("click", () => changeValue("betValue", -1));
+  document.getElementById("betPlus").addEventListener("click", () => changeValue("betValue", 1));
+
+  document.getElementById("raiseMinus").addEventListener("click", () => changeValue("raiseValue", -1));
+  document.getElementById("raisePlus").addEventListener("click", () => changeValue("raiseValue", 1));
+}
 
 socket.on("gameData", (data) => {
-  processGameData(data);
-  updateButtons(data.buttons)
+  processGameData(data, window.location.pathname);
+  updateButtons(data.buttons);
 })
 
 function changeValue(where, howMuch) {
@@ -25,10 +33,6 @@ function changeValue(where, howMuch) {
   }
   target.value = value;
 }
-
-socket.on("actionMade", () => {
-  window.location.href = "/wait";
-})
 
 function check() {
   console.log("check");
@@ -74,19 +78,10 @@ function updateBut(target) {
 
   if (target == "bet" || target == "raise") {
     const contener = document.getElementById(target + "Cont");
-    const buttton = document.getElementById(target);
-    const minus = document.getElementById(target + "Minus");
-    const plus = document.getElementById(target + "Plus");
-
     contener.className = "cont";
-    buttton.addEventListener("click", actions[target]);
-    minus.addEventListener("click", () => changeValue(target + "Value", -1));
-    plus.addEventListener("click", () => changeValue(target + "Value", 1));
   } else {
     const buttton = document.getElementById(target);
-
     buttton.className = "btn";
-    buttton.addEventListener("click", actions[target]);
   }
 }
 

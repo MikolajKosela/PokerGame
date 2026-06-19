@@ -2,15 +2,14 @@ from card import Card
 from pack import Pack
 from table import Table
 from player import Player
-from flask import session
 import random
-
 
 class Game:
     def __init__(self):
         self.players = []
         self.tables = []
-        self.idToPlayer = dict()
+        self.tokenToPlayer = dict()
+        self.sidToPlayer = dict()
         self.pack = Pack()
         self.pot = 0
         self.bet = 1
@@ -32,7 +31,6 @@ class Game:
 
     def nextRound(self):
         self.whoseRoundIs = 0
-        playerId = session.get("ID")
 
         callNeded = False
         if self.roundNum % 2 == 0:
@@ -80,37 +78,41 @@ class Game:
         if self.whoseRoundIs >= len(self.players):
             return self.nextRound()
 
-    def check(self):
+    def check(self, sid):
         return self.nextPlayer()
 
-    def makeBet(self, amount):
-        if self.players[session.get("ID")].credits >= amount and amount > 0:
-            self.players[session.get("ID")].credits -= amount
-            self.players[session.get("ID")].bet += amount
+    def makeBet(self, sid, amount):
+        playerData = self.players[self.sidToPlayer[sid]]
+        if playerData.credits >= amount and amount > 0:
+            playerData.credits -= amount
+            playerData.bet += amount
             self.pot += amount
             self.bet = amount
             return self.nextPlayer()
 
-    def call(self):
-        cost = self.bet - self.players[session.get("ID")].bet
+    def call(self, sid):
+        playerData = self.players[self.sidToPlayer[sid]]
+        cost = self.bet - playerData.bet
         print(cost)
-        if self.players[session.get("ID")].credits >= cost:
-            self.players[session.get("ID")].credits -= cost
-            self.players[session.get("ID")].bet += cost
+        if playerData.credits >= cost:
+            playerData.credits -= cost
+            playerData.bet += cost
             self.pot += cost
             return self.nextPlayer()
 
-    def raiseBet(self, amount):
-        cost = self.bet - self.players[session.get("ID")].bet
-        if self.players[session.get("ID")].credits >= amount + cost and amount > 0:
-            self.players[session.get("ID")].credits -= amount + cost
-            self.players[session.get("ID")].bet += amount + cost
+    def raiseBet(self, sid, amount):
+        playerData = self.players[self.sidToPlayer[sid]]
+        cost = self.bet - playerData.bet
+        if playerData.credits >= amount + cost and amount > 0:
+            playerData.credits -= amount + cost
+            playerData.bet += amount + cost
             self.pot += amount + cost
             self.bet += amount
             return self.nextPlayer()
 
-    def fold(self):
-        self.players[session.get("ID")].fold = True
+    def fold(self, sid):
+        playerData = self.players[self.sidToPlayer[sid]]
+        playerData.fold = True
         self.playersNum -= 1
         if self.playersNum <= 1:
             for table in self.tables:
@@ -118,11 +120,12 @@ class Game:
             return self.end()
         return self.nextPlayer()
 
-    def allin(self):
-        self.players[session.get("ID")].allin = True
-        amount = self.players[session.get("ID")].credits
-        self.players[session.get("ID")].credits = 0
-        self.players[session.get("ID")].bet += amount
+    def allin(self, sid):
+        playerData = self.players[self.sidToPlayer[sid]]
+        playerData.allin = True
+        amount = playerData.credits
+        playerData.credits = 0
+        playerData.bet += amount
         self.pot += amount
         self.bet += amount
         return self.nextPlayer()

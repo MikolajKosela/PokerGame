@@ -1,8 +1,8 @@
 class Player:
-    def __init__(self, nickname, credits, ID):
+    def __init__(self, nickname, credits, ID, sid):
         self.nickname = nickname
         self.ID = ID
-        self.sid = None
+        self.sid = sid
         self.credits = credits
         self.bet = 0
         self.allin = False
