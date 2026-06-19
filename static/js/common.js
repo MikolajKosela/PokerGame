@@ -8,6 +8,8 @@ function updateRound(data) {
     if (playersNum != null) {
         if (data.playersNum == 0) {
             playersNum.innerHTML = "Dołącz do lobby jako pierwszy";
+        } else if (data.playersNum == 1) {
+            playersNum.innerHTML = "W lobby czeka: " + data.playersNum + " gracz";
         } else {
             playersNum.innerHTML = "W lobby czeka: " + data.playersNum + " graczy";
         }
@@ -94,14 +96,15 @@ function updatePlayers(data) {
     playersList.innerHTML = '';
 
     for(const player of data) {
-        console.log(player.id, data.curID);
-        if (player.id != data.curID) {
-            const li = document.createElement("li");
-            console.log(player);
-            li.textContent =
-                player.nickname + " - " + player.credits;
-            playersList.appendChild(li);
+        const li = document.createElement("li");
+        console.log(player);
+
+        if (player.id == 0) {
+            li.textContent = player.nickname + " - " + player.credits + " (admin)";
+        } else {
+            li.textContent = player.nickname + " - " + player.credits;
         }
+        playersList.appendChild(li);
     }
 }
 

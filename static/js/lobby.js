@@ -1,3 +1,5 @@
+import { processGameData } from "./common.js";
+
 const welcome=document.getElementById("welcome");
 let nickname=localStorage.getItem("nickname");
 welcome.innerHTML="Witaj "+nickname;
@@ -8,31 +10,18 @@ socket.on("checkState", (data) => {
         window.location.href = target;
     } else {
         if (localStorage.getItem("admin") == "true") {
-            document.getElementById("start").className = "btn";
+            const button = document.getElementById("start");
+            button.addEventListener("click", () => start());
+            button.className = "btn";
         }
-        socket.emit("playersListRequest");
+        socket.emit("gameDataRequest");
     }
 });
 
-socket.on("playersList", (data) => {
-    const list=document.getElementById("players");
-    list.innerHTML=""
-    var cnt=0;
-
-    data.forEach(function(player)
-    {
-        const li=document.createElement("li");
-        if(cnt==0)
-            li.textContent=player.nickname+" - "+player.credits+" (admin)";
-        else
-            li.textContent=player.nickname+" - "+player.credits;
-        list.appendChild(li);
-        cnt+=1;
-    });
-
-    const p_num=document.getElementById("playersNum");
-    p_num.innerHTML="Graczy w lobby: "+cnt;
-})
+socket.on("gameData", (data) => {
+  console.log(data);
+  processGameData(data);
+});
 
 function start() {
     if (localStorage.getItem("admin") == "true") {

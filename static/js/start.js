@@ -23,7 +23,6 @@ socket.on("joined", (data) => {
 });
 
 function join() {
-  console.log("asdkfjaklsdfjajklsdhfjklasdhfahjk");
   let nickname = document.getElementById("nickname").value;
   localStorage.setItem("nickname", nickname);
 

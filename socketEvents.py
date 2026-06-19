@@ -19,7 +19,6 @@ from app import *
 socketio = SocketIO(app)
 
 def grantToken():
-    print("            przyznaje token")
     id = random.randint(1000, 100000)
     while id in game.idToPlayer.keys():
         id = random.randint(1000, 100000)
@@ -57,6 +56,76 @@ def summary():
 
     socketio.emit("summary", summaryData)
 
+def sendData(sid):
+    myID = None
+    myData = None
+    curID = None
+    curNick = None
+    playersNum = None
+    pot = None 
+    bet = None 
+    roundNum = None
+    yourBet = None
+    yourCredits = None 
+
+    commonCards = None 
+    playerCards = None
+    roundData = None 
+    players = None 
+    buttons = None 
+
+    myID = session.get("ID")
+    playersNum = len(game.players)
+    players = [player.to_dict() for player in game.players]
+
+    if (game.whoseRoundIs >= 0 or game.isEnd) and myID != None:
+        myData = game.players[myID]
+        commonCards = game.tables[-1].to_dict()
+        playerCards = game.tables[myID].to_dict()
+        curID = game.whoseRoundIs
+        if curID >= 0:
+            curNick = game.players[curID].nickname
+        pot = game.pot
+        bet = game.bet - myData.bet
+        roundNum = game.roundNum
+        yourBet = myData.bet
+        yourCredits = myData.credits
+        buttons = {
+            "check": myData.allin or game.bet == myData.bet,
+            "bet": not myData.allin and game.roundNum % 2 == 0 and game.bet == 0,
+            "call": not myData.allin and game.bet > myData.bet,
+            "raise": not myData.allin and game.roundNum % 2 == 0 and game.bet > 0,
+            "fold": not myData.allin, 
+            "allin": myData.credits > 0 and game.roundNum % 2 == 0
+        }
+
+    roundData = {
+        "curID": curID,
+        "curNick": curNick,
+        "playersNum": playersNum,
+        "pot": pot, 
+        "bet": bet,
+        "roundNum": roundNum,
+        "yourBet": yourBet,
+        "yourCredits": yourCredits,
+    }
+    
+    data = {
+        "commonCards": commonCards,
+        "playerCards": playerCards,
+        "roundData": roundData,
+        "buttons": buttons,
+        "players": players
+    }
+
+    if game.isEnd == True:
+        summary()
+    socketio.emit("gameData", data, to=sid)
+
+def refreshData():
+    for player in game.players:
+        sendData(player.sid)
+
 @socketio.on("handshake")
 def handshake(data):
     ok = False
@@ -73,8 +142,11 @@ def handshake(data):
         print(session)
         if curID == 0:
             admin = True
+        game.players[curID].sid = request.sid
 
     socketio.emit("handshakeAnswer", {"ok" : ok, "admin" : admin}, to=request.sid)
+    sendData(request.sid)
+    refreshData()
 
 @socketio.on("checkStateRequest")
 def checkState():
@@ -101,6 +173,9 @@ def checkState():
         state = "/wait"
 
     print("Dostałem zapytanie, wysyłam", state)
+    if curID != None:
+        print(game.players[curID].sid)
+    print(request.sid)
     socketio.emit("checkState", {"state": state}, to=request.sid)
 
 @socketio.on("join")
@@ -113,6 +188,7 @@ def join(data):
 
     print("Dołączył gracz")
     socketio.emit("joined", {"token": grantToken()}, to=request.sid)
+    refreshData()
 
 @socketio.on("playersListRequest")
 def playersList():
@@ -125,73 +201,10 @@ def startGame():
     if session.get("ID") == 0:
         game.start()
         socketio.emit("started")
-    
 
 @socketio.on("gameDataRequest")
 def gameDataRequest():
-    myID = None
-    myData = None
-    curID = None
-    curNick = None
-    playersNum = None
-    pot = None 
-    bet = None 
-    roundNum = None
-    yourBet = None
-    yourCredits = None 
-
-    commonCards = None 
-    playerCards = None
-    roundData = None 
-    players = None 
-    buttons = None 
-
-    myID = session.get("ID")
-    playersNum = len(game.players)
-
-    if (game.whoseRoundIs >= 0 or game.isEnd) and myID != None:
-        myData = game.players[myID]
-        commonCards = game.tables[-1].to_dict()
-        playerCards = game.tables[myID].to_dict()
-        curID = game.whoseRoundIs
-        curNick = game.players[curID].nickname
-        pot = game.pot
-        bet = game.bet - myData.bet
-        roundNum = game.roundNum
-        yourBet = myData.bet
-        yourCredits = myData.credits
-        buttons = {
-            "check": myData.allin or game.bet == myData.bet,
-            "bet": not myData.allin and game.roundNum % 2 == 0 and game.bet == 0,
-            "call": not myData.allin and game.bet > myData.bet,
-            "raise": not myData.allin and game.roundNum % 2 == 0 and game.bet > 0,
-            "fold": not myData.allin, 
-            "allin": myData.credits > 0 and game.roundNum % 2 == 0
-        }
-        players = [player.to_dict() for player in game.players]
-
-    roundData = {
-        "curID": curID,
-        "curNick": curNick,
-        "playersNum": playersNum,
-        "pot": pot, 
-        "bet": bet,
-        "roundNum": roundNum,
-        "yourBet": yourBet,
-        "yourCredits": yourCredits,
-    }
-    
-    data = {
-        "commonCards": commonCards,
-        "playerCards": playerCards,
-        "roundData": roundData,
-        "buttons": buttons,
-        "players": players
-    }
-
-    if game.isEnd == True:
-        summary()
-    socketio.emit("gameData", data, to=request.sid)
+    refreshData()
 
 @socketio.on("check")
 def check():

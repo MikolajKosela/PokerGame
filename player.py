@@ -2,6 +2,7 @@ class Player:
     def __init__(self, nickname, credits, ID):
         self.nickname = nickname
         self.ID = ID
+        self.sid = None
         self.credits = credits
         self.bet = 0
         self.allin = False
