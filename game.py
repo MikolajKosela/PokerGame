@@ -58,8 +58,8 @@ class Game:
                 player.bet = 0
             self.bet = 0
 
-        #Jeżeli wszyscy gracze wyrównali swoje zaklady, to
-        #można pominąć turę wyrównywania 
+        # Jeżeli wszyscy gracze wyrównali swoje zaklady, to
+        # można pominąć turę wyrównywania 
         if not call_needed and self.round_num % 2 == 0:
             self.round_num += 1
         self.round_num += 1
@@ -76,23 +76,23 @@ class Game:
         # 9 Wyrównywanie/ czekanie
         # 10 Podsumowanie i wybór zwycięzców
 
-        #Odkryj karty na stosach graczy
-        #(z pominięciem ostatniego [:-1], wspólnego stołu)
+        # Odkryj karty na stosach graczy
+        # (z pominięciem ostatniego [:-1], wspólnego stołu)
         if self.round_num == 2:
             for table in self.tables[:-1]:
                 for card in table.cards:
                     card.make_visible()
 
-        #Odkryj trzy wspólne karty
+        # Odkryj trzy wspólne karty
         elif self.round_num == 4:
             for i in range(0, 3):
                 self.tables[-1].cards[i].make_visible()
 
-        #Odkryj po jednej wspólnej karcie
+        # Odkryj po jednej wspólnej karcie
         elif self.round_num == 6 or self.round_num == 8:
             self.tables[-1].cards[int(self.round_num / 2)].make_visible()
 
-        #Zakończ rozgrywkę
+        # Zakończ rozgrywkę
         elif self.round_num == 10:
             return self.end()
 
@@ -101,7 +101,7 @@ class Game:
         if self.whose_round_is >= len(self.players):
             return self.next_round()
             
-    #pdata = player's data
+    # pdata = player's data
     def can_i_check(self, sid):
         pdata = self.players[self.sid_to_player[sid]]
 
