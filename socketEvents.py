@@ -37,7 +37,7 @@ def check_token(token):
     return False 
 
 def summary():
-    if game.is_end == False:
+    if game.is_end() == False:
         return False
     sumarry_data = []
     for i, player in enumerate(game.players):
@@ -63,11 +63,11 @@ def check_state(sid):
     # 2 - action
     # 3 - wait
     # 4 - end
-    print (cur_ID, game.is_end, game.whose_round_is)
+    print (cur_ID, game.is_end(), game.whose_round_is)
 
     if cur_ID == None:
         state = "/"
-    elif game.is_end == True:
+    elif game.is_end() == True:
         state = "/end"
     elif game.whose_round_is == -1:
         state = "/lobby"
@@ -107,7 +107,7 @@ def send_data(sid):
     players_num = len(game.players)
     players = [player.to_dict() for player in game.players]
 
-    if (game.whose_round_is >= 0 or game.is_end) and my_ID != None:
+    if (game.whose_round_is >= 0 or game.is_end()) and my_ID != None:
         my_data = game.players[my_ID]
         common_cards = game.tables[-1].to_dict()
         player_cards = game.tables[my_ID].to_dict()
@@ -153,7 +153,7 @@ def send_data(sid):
         "players": players
     }
 
-    if game.is_end == True:
+    if game.is_end() == True:
         summary()
     socketio.emit("gameData", data, to=sid)
 

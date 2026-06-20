@@ -15,7 +15,6 @@ class Game:
         self.bet = 1
         self.players_num = 0
         self.round_num = 0
-        self.is_end = False
         self.whose_round_is = -1
 
     def append_player(self, nickname, credits, sid):
@@ -39,8 +38,13 @@ class Game:
         self.tables.append(Table(self.pack, 5))
         self.whose_round_is = 0
 
+    def is_end(self):
+        return self.round_num == 10
+
     def end(self):
-        self.is_end = True
+        self.round_num = 10
+        for table in self.tables:
+            table.show_cards(5)
         self.whose_round_is = -2
 
     def next_round(self):
@@ -199,8 +203,6 @@ class Game:
             self.players_num -= 1
 
             if self.players_num <= 1:
-                for table in self.tables:
-                    table.show_cards(5)
                 return self.end()
             return self.next_player()
         else:
@@ -227,7 +229,7 @@ class Game:
         self.tables = []
         self.bet = 1
         self.pack = Pack()
-        self.is_end = False
+
         for player in self.players:
             player.bet = 0
             player.allin = False
