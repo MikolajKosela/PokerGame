@@ -159,7 +159,7 @@ class Game:
         playerData = self.players[self.sidToPlayer[sid]]
         cost = self.bet - playerData.bet
 
-        if self.canIBet(sid) and amount > 0 and playerData.credits >= cost + amount:
+        if self.canIRaise(sid) and amount > 0 and playerData.credits >= cost + amount:
             playerData.credits -= amount + cost
             playerData.bet += amount + cost
 
