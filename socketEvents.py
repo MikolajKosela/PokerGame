@@ -192,12 +192,16 @@ def lobby_update_request():
 @socketio.on("join")
 def join(data):
     nickname = data["nickname"]
-    game.players.append(Player(nickname, 100, len(game.players), request.sid))
-    game.players_num = len(game.players)
+    return_code = game.append_player(nickname, 100, request.sid)
 
-    socketio.emit("joined", {"token": grant_token()}, to=request.sid)
-    socketio.emit("lobbyUpdate", {"players_num": len(game.players)})
-    refresh_data()
+    if return_code == 2:
+        send_error_message("Nick musi mieć długość co najmniej 1 oraz może składać się wyłącznie z znaków a-z, 0-9, _", request.sid)
+    elif return_code == 3:
+        send_error_message("Gracz o takim nicku już istnieje", request.sid)
+    else : 
+        socketio.emit("joined", {"token": grant_token()}, to=request.sid)
+        socketio.emit("lobbyUpdate", {"players_num": len(game.players)})
+        refresh_data()
 
 @socketio.on("startGame")
 def start_game():

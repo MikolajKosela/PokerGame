@@ -18,6 +18,20 @@ class Game:
         self.is_end = False
         self.whose_round_is = -1
 
+    def append_player(self, nickname, credits, sid):
+        # return codes: 
+        # 2 -> invalid character in nick 
+        # 3 -> a player with this nick exists
+        if len(nickname) == 0 or not all(char.isalnum() or char == "_" for char in nickname):
+            return 2
+        elif any(player.nickname == nickname for player in self.players):
+            return 3
+        else :
+            self.players.append(Player(nickname, credits, self.players_num, sid))
+            self.players_num += 1
+            if self.players_num != len(self.players):
+                return 3
+
     def start(self):
         self.pack.shuffle_cards()
         for _ in self.players:
