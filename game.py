@@ -33,44 +33,53 @@ class Game:
         self.whoseRoundIs = 0
 
         callNeded = False
-        if self.roundNum % 2 == 0:
-            for player in self.players:
-                if player.bet < self.bet:
-                    callNeded = True
-                    break
+        if (
+            self.roundNum % 2 == 0 
+            and any(player.bet < self.bet for player in self.players)
+            ):
+            callNeded = True
 
         if not callNeded:
             for player in self.players:
                 player.bet = 0
             self.bet = 0
 
+        #Jeżeli wszyscy gracze wyrównali swoje zaklady, to
+        #można pominąć turę wyrównywania 
         if not callNeded and self.roundNum % 2 == 0:
             self.roundNum += 1
         self.roundNum += 1
 
-        # 0 Wchodzenie i podbijanie wejścia
-        # 1 Wyrównywanie wejścia
-        # 2 Pokazanie kart graczy i betowanie
-        # 3 Sprawdzanie/czekanie
-        # 4 Odkrycie 3 kart i betowanie
-        # 5 Sprawdzanie/czekanie
-        # 6 Odkrycie karty i betowanie
-        # 7 Sprawdzanie/czekanie
-        # 8 Odkrycie karty i betowanie
-        # 9 Sprawdzanie/czekanie
-        # 10 Podsumowanie
+        # 0 Wchodzenie i podbijanie wejściowego zakładu
+        # 1 Wyrównywanie do zakładu wejścia
+        # 2 Pokazanie kart graczy i przyjmowanie zakładów 
+        # 3 Wyrównywanie/ czekanie
+        # 4 Odkrycie 3 kart i przyjmowanie zakładów 
+        # 5 Wyrównywanie/ czekanie
+        # 6 Odkrycie karty i przyjmowanie zakładów
+        # 7 Wyrównywanie/ czekanie
+        # 8 Odkrycie karty i przyjmowanie zakładów 
+        # 9 Wyrównywanie/ czekanie
+        # 10 Podsumowanie i wybór zwycięzców
 
+        #Odkryj karty na stosach graczy
+        #(z pominięciem ostatniego [:-1], wspólnego stołu)
         if self.roundNum == 2:
-            for i in range(0, len(self.players)):
-                for card in self.tables[i].cards:
+            for table in self.tables[:-1]:
+                for card in table.cards:
                     card.makeVisible()
+
+        #Odkryj trzy wspólne karty
         elif self.roundNum == 4:
             for i in range(0, 3):
                 self.tables[-1].cards[i].makeVisible()
+
+        #Odkryj po jednej wspólnej karcie
         elif self.roundNum == 6 or self.roundNum == 8:
             self.tables[-1].cards[int(self.roundNum / 2)].makeVisible()
 
-        if self.roundNum == 10:
+        #Zakończ rozgrywkę
+        elif self.roundNum == 10:
             return self.end()
 
     def nextPlayer(self):
