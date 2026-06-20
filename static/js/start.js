@@ -8,7 +8,7 @@ socket.on("gameData", (data) => {
   if (checkState(data, window.location.pathname) == 0) {
     window.location.href = data.state;
   }
-  socket.emit("lobbyUpdateRequest");
+  socket.emit("startDataRequest");
 });
 
 socket.on("joined", (data) => {
@@ -27,15 +27,20 @@ function join() {
   });
 }
 
-socket.on("lobbyUpdate", (data) => {
-  const playersNum = document.getElementById("playersNum");
-  if (playersNum != null) {
+socket.on("startData", (data) => {
+  console.log(data);
+  const info = document.getElementById("infoBox");
+  if (info != null) {
+    if (data.started == true) {
+      info.innerHTML = "Nie możesz dołączyć w trakcie trwającej rozgrywki"; 
+    } else {
       if (data.playersNum == 0) {
-          playersNum.innerHTML = "Dołącz do lobby jako pierwszy";
+          info.innerHTML = "Dołącz do lobby jako pierwszy";
       } else if (data.playersNum == 1) {
-          playersNum.innerHTML = "W lobby czeka: " + data.playersNum + " gracz";
+          info.innerHTML = "W lobby czeka: " + data.playersNum + " gracz";
       } else {
-          playersNum.innerHTML = "W lobby czeka: " + data.playersNum + " graczy";
+          info.innerHTML = "W lobby czeka: " + data.playersNum + " graczy";
       }
+    } 
   }
 }) 

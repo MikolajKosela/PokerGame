@@ -185,29 +185,35 @@ def handshake(data):
 
     socketio.emit("handshakeAnswer", {"ok" : ok, "admin" : admin}, to=request.sid)
 
-@socketio.on("lobbyUpdateRequest")
-def lobby_update_request():
-    socketio.emit("lobbyUpdate", {"playersNum": game.players_num()})
+@socketio.on("startDataRequest")
+def start_data_request():
+    socketio.emit("startData", {"playersNum": game.players_num(), "started": game.started()})
 
 @socketio.on("join")
 def join(data):
-    nickname = data["nickname"]
-    return_code = game.append_player(nickname, 100, request.sid)
+    if not game.started():
+        nickname = data["nickname"]
+        return_code = game.append_player(nickname, 100, request.sid)
 
-    if return_code == 2:
-        send_error_message("Nick musi mieć długość co najmniej 1 oraz może składać się wyłącznie z znaków a-z, 0-9, _", request.sid)
-    elif return_code == 3:
-        send_error_message("Gracz o takim nicku już istnieje", request.sid)
-    else : 
-        socketio.emit("joined", {"token": grant_token()}, to=request.sid)
-        socketio.emit("lobbyUpdate", {"players_num": game.players_num()})
-        refresh_data()
+        if return_code == 2:
+            send_error_message("Nick musi mieć długość co najmniej 1 oraz może składać się wyłącznie z znaków a-z, 0-9, _", request.sid)
+        elif return_code == 3:
+            send_error_message("Gracz o takim nicku już istnieje", request.sid)
+        else : 
+            socketio.emit("joined", {"token": grant_token()}, to=request.sid)
+            socketio.emit("startData", {"players_num": game.players_num(), "started": game.started()})
+            refresh_data()
+    else:
+        send_error_message("Nie możesz dołączyć w trakcie trwającej rozgrywki", request.sid)
+
 
 @socketio.on("startGame")
 def start_game():
     if game.sid_to_player[request.sid] == 0:
         game.start()
         refresh_data()
+        socketio.emit("startData", {"players_num": game.players_num(), "started": game.started()})
+
 
 @socketio.on("gameDataRequest")
 def game_data_request():

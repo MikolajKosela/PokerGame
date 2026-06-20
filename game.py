@@ -13,7 +13,7 @@ class Game:
         self.pack = Pack()
         self.pot = 0
         self.bet = 1
-        self.round_num = 0
+        self.round_num = -1
         self.whose_round_is = -1
 
     def append_player(self, nickname, credits, sid):
@@ -33,12 +33,16 @@ class Game:
     def active_players(self):
         return [player for player in self.players if not player.fold]
 
+    def started(self):
+        return self.round_num > -1
+
     def start(self):
         self.pack.shuffle_cards()
         for _ in self.players:
             self.tables.append(Table(self.pack, 2))
         self.tables.append(Table(self.pack, 5))
         self.whose_round_is = 0
+        self.round_num = 0
 
     def is_end(self):
         return self.round_num == 10
