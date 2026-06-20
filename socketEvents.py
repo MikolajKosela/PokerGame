@@ -17,32 +17,32 @@ from app import *
 
 socketio = SocketIO(app)
 
-def grantToken():
+def grant_token():
     token = random.randint(1000, 100000)
-    while token in game.sidToPlayer.keys():
+    while token in game.sid_to_player.keys():
         token = random.randint(1000, 100000)
 
-    game.tokenToPlayer[token] = len(game.sidToPlayer)
+    game.token_to_player[token] = len(game.sid_to_player)
     return token
 
-def checkToken(token):
+def check_token(token):
     token = str(token)
     if token.isdecimal() == False:
         return False
 
     token = int(token)
 
-    if token in game.tokenToPlayer.keys():
+    if token in game.token_to_player.keys():
         return True
     return False 
 
 def summary():
-    if game.isEnd == False:
+    if game.is_end == False:
         return False
-    summaryData = []
+    sumarry_data = []
     for i, player in enumerate(game.players):
         cards = [card.to_dict() for card in game.tables[i].cards]
-        summaryData.append(
+        sumarry_data.append(
             {
                 "nickname": player.nickname,
                 "id": player.ID,
@@ -51,11 +51,11 @@ def summary():
                 "cards": cards,
             }
         )
-    socketio.emit("summary", summaryData)
+    socketio.emit("summary", sumarry_data)
 
-def checkState(sid):
-    curID = game.sidToPlayer[sid]
-    nickname = game.players[curID].nickname
+def check_state(sid):
+    cur_ID = game.sid_to_player[sid]
+    nickname = game.players[cur_ID].nickname
 
     state = "/"
     # 0 - start
@@ -63,160 +63,160 @@ def checkState(sid):
     # 2 - action
     # 3 - wait
     # 4 - end
-    print (curID, game.isEnd, game.whoseRoundIs)
+    print (cur_ID, game.is_end, game.whose_round_is)
 
-    if curID == None:
+    if cur_ID == None:
         state = "/"
-    elif game.isEnd == True:
+    elif game.is_end == True:
         state = "/end"
-    elif game.whoseRoundIs == -1:
+    elif game.whose_round_is == -1:
         state = "/lobby"
-    elif curID == game.whoseRoundIs:
+    elif cur_ID == game.whose_round_is:
         state = "/action"
-    elif curID != game.whoseRoundIs:
+    elif cur_ID != game.whose_round_is:
         state = "/wait"
 
-    print("Dostałem zapytanie od", curID, nickname, "wysyłam", state)
+    print("Dostałem zapytanie od", cur_ID, nickname, "wysyłam", state)
     return state
 
-def sendData(sid):
+def send_data(sid):
     print("Wysyłam dane do gracza: ", sid)
     state = "/"
-    myID = None
-    myData = None
-    curID = None
-    curNick = None
-    playersNum = None
+    my_ID = None
+    my_data = None
+    cur_ID = None
+    cur_nick = None
+    players_num = None
     pot = None 
     bet = None 
-    roundNum = None
-    yourBet = None
-    yourCredits = None 
+    round_num = None
+    your_bet = None
+    your_credits = None 
 
-    commonCards = None 
-    playerCards = None
-    roundData = None 
+    common_cards = None 
+    player_cards = None
+    round_data = None 
     players = None 
     buttons = None 
 
-    if game.sidToPlayer.get(sid) != None:
-        myID = game.sidToPlayer[sid]
-        state = checkState(sid)
-        print(" ID GRACZA ", myID, game.players[myID].nickname)
+    if game.sid_to_player.get(sid) != None:
+        my_ID = game.sid_to_player[sid]
+        state = check_state(sid)
+        print(" ID GRACZA ", my_ID, game.players[my_ID].nickname)
 
-    playersNum = len(game.players)
+    players_num = len(game.players)
     players = [player.to_dict() for player in game.players]
 
-    if (game.whoseRoundIs >= 0 or game.isEnd) and myID != None:
-        myData = game.players[myID]
-        commonCards = game.tables[-1].to_dict()
-        playerCards = game.tables[myID].to_dict()
+    if (game.whose_round_is >= 0 or game.is_end) and my_ID != None:
+        my_data = game.players[my_ID]
+        common_cards = game.tables[-1].to_dict()
+        player_cards = game.tables[my_ID].to_dict()
 
-        curID = game.whoseRoundIs
-        if curID >= 0:
-            curNick = game.players[curID].nickname
+        cur_ID = game.whose_round_is
+        if cur_ID >= 0:
+            cur_nick = game.players[cur_ID].nickname
 
         pot = game.pot
-        bet = game.bet - myData.bet
+        bet = game.bet - my_data.bet
 
-        roundNum = game.roundNum
-        yourBet = myData.bet
-        yourCredits = myData.credits
+        round_num = game.round_num
+        your_bet = my_data.bet
+        your_credits = my_data.credits
 
         buttons = {
-            "check": game.canICheck(sid),
-            "bet": game.canIBet(sid),
-            "call": game.canICall(sid),
-            "raise": game.canIRaise(sid),
-            "fold": game.canIFold(sid),
-            "allin": game.canIAllin(sid),
+            "check": game.can_i_check(sid),
+            "bet": game.can_i_bet(sid),
+            "call": game.can_i_call(sid),
+            "raise": game.can_i_raise(sid),
+            "fold": game.can_i_fold(sid),
+            "allin": game.can_i_allin(sid),
         }
 
-    roundData = {
-        "curID": curID,
-        "curNick": curNick,
-        "playersNum": playersNum,
+    round_data = {
+        "curID": cur_ID,
+        "curNick": cur_nick,
+        "playersNum": players_num,
         "pot": pot, 
         "bet": bet,
-        "roundNum": roundNum,
-        "yourBet": yourBet,
-        "yourCredits": yourCredits,
+        "round_num": round_num,
+        "yourBet": your_bet,
+        "yourCredits": your_credits,
     }
     
     data = {
         #"sid": sid,
         "state": state,
-        "commonCards": commonCards,
-        "playerCards": playerCards,
-        "roundData": roundData,
+        "commonCards": common_cards,
+        "playerCards": player_cards,
+        "roundData": round_data,
         "buttons": buttons,
         "players": players
     }
 
-    if game.isEnd == True:
+    if game.is_end == True:
         summary()
     socketio.emit("gameData", data, to=sid)
 
-def refreshData():
+def refresh_data():
     print("  Wyświetlam graczy, którym odświeżam dane")
     for player in game.players:
         print(player.nickname)
-        sendData(player.sid)
+        send_data(player.sid)
 
-def sendErrorMessage(message, sid):
+def send_error_message(message, sid):
     socketio.emit("error", {"info": message}, to=sid)
 
 @socketio.on("handshake")
 def handshake(data):
     ok = False
     print(data)
-    if checkToken(data["token"]) == True:
+    if check_token(data["token"]) == True:
         ok = True
 
     admin = False
 
     if ok == True:
-        curID = game.tokenToPlayer[int(data["token"])]
-        game.sidToPlayer[request.sid] = curID
-        if curID >= 0:
-            game.players[curID].sid = request.sid
-        if curID == 0:
+        cur_ID = game.token_to_player[int(data["token"])]
+        game.sid_to_player[request.sid] = cur_ID
+        if cur_ID >= 0:
+            game.players[cur_ID].sid = request.sid
+        if cur_ID == 0:
             admin = True
 
     socketio.emit("handshakeAnswer", {"ok" : ok, "admin" : admin}, to=request.sid)
 
 @socketio.on("lobbyUpdateRequest")
-def lobbyUpdateRequest():
+def lobby_update_request():
     socketio.emit("lobbyUpdate", {"playersNum": len(game.players)})
 
 @socketio.on("join")
 def join(data):
     nickname = data["nickname"]
     game.players.append(Player(nickname, 100, len(game.players), request.sid))
-    game.playersNum = len(game.players)
+    game.players_num = len(game.players)
 
-    socketio.emit("joined", {"token": grantToken()}, to=request.sid)
-    socketio.emit("lobbyUpdate", {"playersNum": len(game.players)})
-    refreshData()
+    socketio.emit("joined", {"token": grant_token()}, to=request.sid)
+    socketio.emit("lobbyUpdate", {"players_num": len(game.players)})
+    refresh_data()
 
 @socketio.on("startGame")
-def startGame():
-    if game.sidToPlayer[request.sid] == 0:
+def start_game():
+    if game.sid_to_player[request.sid] == 0:
         game.start()
-        refreshData()
+        refresh_data()
 
 @socketio.on("gameDataRequest")
-def gameDataRequest():
-    sendData(request.sid)
+def game_data_request():
+    send_data(request.sid)
 
 @socketio.on("check")
 def check():
     print("check")
     
     if game.check(request.sid) == 2:
-        sendErrorMessage("Serwer odmówił wykonania tej akcji", request.sid)
+        send_error_message("Serwer odmówił wykonania tej akcji", request.sid)
     else:
-        refreshData()
+        refresh_data()
 
 @socketio.on("bet")
 def bet(data):
@@ -225,49 +225,49 @@ def bet(data):
     amount = int(amount)
     print("bet: ", amount)
 
-    if game.makeBet(request.sid, amount) == 2:
-        sendErrorMessage("Serwer odmówił wykonania tej akcji", request.sid)
+    if game.make_bet(request.sid, amount) == 2:
+        send_error_message("Serwer odmówił wykonania tej akcji", request.sid)
     else:
-        refreshData()
+        refresh_data()
 
 @socketio.on("call")
 def call():
     print("call")
     
     if game.call(request.sid) == 2:
-        sendErrorMessage("Serwer odmówił wykonania tej akcji", request.sid)
+        send_error_message("Serwer odmówił wykonania tej akcji", request.sid)
     else:
-        refreshData()
+        refresh_data()
 
 @socketio.on("raise")
-def raiseBet(data):
+def raise_bet(data):
     amount = data["amount"]
     amount = str(amount)
     amount = int(amount)
     print("raise: ", amount)
 
     if game.raiseBet(request.sid, amount) == 2:
-        sendErrorMessage("Serwer odmówił wykonania tej akcji", request.sid)
+        send_error_message("Serwer odmówił wykonania tej akcji", request.sid)
     else:
-        refreshData()
+        refresh_data()
 
 @socketio.on("fold")
 def fold():
     print("fold")
 
     if game.fold(request.sid) == 2:
-        sendErrorMessage("Serwer odmówił wykonania tej akcji", request.sid)
+        send_error_message("Serwer odmówił wykonania tej akcji", request.sid)
     else:
-        refreshData()
+        refresh_data()
 
 @socketio.on("allin")
 def allin():
     print("allin")
 
     if game.allin(request.sid) == 2:
-        sendErrorMessage("Serwer odmówił wykonania tej akcji", request.sid)
+        send_error_message("Serwer odmówił wykonania tej akcji", request.sid)
     else:
-        refreshData()
+        refresh_data()
 
 @socketio.on("winners")
 def winners(data):
@@ -278,9 +278,9 @@ def winners(data):
     
     game.pot %= winnersNum
     socketio.emit("creditsGranted")
-    refreshData()
+    refresh_data()
 
 @socketio.on("newDeal")
 def newDeal():
     game.again()
-    refreshData()
+    refresh_data()

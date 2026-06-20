@@ -11,8 +11,8 @@ class Table:
 
     def show_card(self, num):
         for card in self.cards:
-            if not card.isVisible():
-                card.makeVisible()
+            if not card.is_visible():
+                card.make_visible()
                 num -= 1
             if num == 0:
                 break

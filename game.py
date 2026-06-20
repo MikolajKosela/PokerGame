@@ -8,47 +8,47 @@ class Game:
     def __init__(self):
         self.players = []
         self.tables = []
-        self.tokenToPlayer = dict()
-        self.sidToPlayer = dict()
+        self.token_to_player = dict()
+        self.sid_to_player = dict()
         self.pack = Pack()
         self.pot = 0
         self.bet = 1
-        self.playersNum = 0
-        self.roundNum = 0
-        self.isEnd = False
-        self.whoseRoundIs = -1
+        self.players_num = 0
+        self.round_num = 0
+        self.is_end = False
+        self.whose_round_is = -1
 
     def start(self):
         self.pack.shuffle_cards()
         for _ in self.players:
             self.tables.append(Table(self.pack, 2))
         self.tables.append(Table(self.pack, 5))
-        self.whoseRoundIs = 0
+        self.whose_round_is = 0
 
     def end(self):
-        self.isEnd = True
-        self.whoseRoundIs = -2
+        self.is_end = True
+        self.whose_round_is = -2
 
-    def nextRound(self):
-        self.whoseRoundIs = 0
+    def next_round(self):
+        self.whose_round_is = 0
 
-        callNeded = False
+        call_needed = False
         if (
-            self.roundNum % 2 == 0 
+            self.round_num % 2 == 0 
             and any(player.bet < self.bet for player in self.players)
             ):
-            callNeded = True
+            call_needed = True
 
-        if not callNeded:
+        if not call_needed:
             for player in self.players:
                 player.bet = 0
             self.bet = 0
 
         #Jeżeli wszyscy gracze wyrównali swoje zaklady, to
         #można pominąć turę wyrównywania 
-        if not callNeded and self.roundNum % 2 == 0:
-            self.roundNum += 1
-        self.roundNum += 1
+        if not call_needed and self.round_num % 2 == 0:
+            self.round_num += 1
+        self.round_num += 1
 
         # 0 Wchodzenie i podbijanie wejściowego zakładu
         # 1 Wyrównywanie do zakładu wejścia
@@ -64,157 +64,158 @@ class Game:
 
         #Odkryj karty na stosach graczy
         #(z pominięciem ostatniego [:-1], wspólnego stołu)
-        if self.roundNum == 2:
+        if self.round_num == 2:
             for table in self.tables[:-1]:
                 for card in table.cards:
-                    card.makeVisible()
+                    card.make_visible()
 
         #Odkryj trzy wspólne karty
-        elif self.roundNum == 4:
+        elif self.round_num == 4:
             for i in range(0, 3):
-                self.tables[-1].cards[i].makeVisible()
+                self.tables[-1].cards[i].make_visible()
 
         #Odkryj po jednej wspólnej karcie
-        elif self.roundNum == 6 or self.roundNum == 8:
-            self.tables[-1].cards[int(self.roundNum / 2)].makeVisible()
+        elif self.round_num == 6 or self.round_num == 8:
+            self.tables[-1].cards[int(self.round_num / 2)].make_visible()
 
         #Zakończ rozgrywkę
-        elif self.roundNum == 10:
+        elif self.round_num == 10:
             return self.end()
 
-    def nextPlayer(self):
-        self.whoseRoundIs += 1
-        if self.whoseRoundIs >= len(self.players):
-            return self.nextRound()
+    def next_player(self):
+        self.whose_round_is += 1
+        if self.whose_round_is >= len(self.players):
+            return self.next_round()
+            
+    #pdata = player's data
+    def can_i_check(self, sid):
+        pdata = self.players[self.sid_to_player[sid]]
 
-    def canICheck(self, sid):
-        playerData = self.players[self.sidToPlayer[sid]]
-
-        if playerData.allin or self.bet == playerData.bet:
+        if pdata.allin or self.bet == pdata.bet:
             return 1
         return 0
 
-    def canIBet(self, sid):
-        playerData = self.players[self.sidToPlayer[sid]]
+    def can_i_bet(self, sid):
+        pdata = self.players[self.sid_to_player[sid]]
 
-        if not playerData.allin and self.roundNum % 2 == 0 and self.bet == 0 and playerData.credits > 0:
+        if not pdata.allin and self.round_num % 2 == 0 and self.bet == 0 and pdata.credits > 0:
             return 1
         return 0
 
-    def canICall(self, sid):
-        playerData = self.players[self.sidToPlayer[sid]]
-        cost = self.bet - playerData.bet
+    def can_i_call(self, sid):
+        pdata = self.players[self.sid_to_player[sid]]
+        cost = self.bet - pdata.bet
 
-        if not playerData.allin and self.bet > playerData.bet and playerData.credits >= cost:
+        if not pdata.allin and self.bet > pdata.bet and pdata.credits >= cost:
             return 1
         return 0
 
-    def canIRaise(self, sid):
-        playerData = self.players[self.sidToPlayer[sid]]
+    def can_i_raise(self, sid):
+        pdata = self.players[self.sid_to_player[sid]]
 
-        if not playerData.allin and self.roundNum % 2 == 0 and self.bet > 0 and playerData.credits > self.bet:
+        if not pdata.allin and self.round_num % 2 == 0 and self.bet > 0 and pdata.credits > self.bet:
             return 1
         return 0
 
-    def canIFold(self, sid):
-        playerData = self.players[self.sidToPlayer[sid]]
+    def can_i_fold(self, sid):
+        pdata = self.players[self.sid_to_player[sid]]
 
-        if not playerData.allin:
+        if not pdata.allin:
             return 1
         return 0
 
-    def canIAllin(self, sid):
-        playerData = self.players[self.sidToPlayer[sid]]
+    def can_i_allin(self, sid):
+        pdata = self.players[self.sid_to_player[sid]]
 
-        if not playerData.allin and playerData.credits > 0 and (self.roundNum % 2 == 0 or self.bet > playerData.bet):
+        if not pdata.allin and pdata.credits > 0 and (self.round_num % 2 == 0 or self.bet > pdata.bet):
             return 1
         return 0
 
     def check(self, sid):
-        playerData = self.players[self.sidToPlayer[sid]]
+        pdata = self.players[self.sid_to_player[sid]]
 
-        if self.canICheck(sid):
-            return self.nextPlayer()
+        if self.can_i_check(sid):
+            return self.next_player()
         else:
             return 2
 
-    def makeBet(self, sid, amount):
-        playerData = self.players[self.sidToPlayer[sid]]
+    def make_bet(self, sid, amount):
+        pdata = self.players[self.sid_to_player[sid]]
 
-        if self.canIBet(sid) and amount > 0 and playerData.credits >= amount:
-            playerData.credits -= amount
-            playerData.bet += amount
+        if self.can_i_bet(sid) and amount > 0 and pdata.credits >= amount:
+            pdata.credits -= amount
+            pdata.bet += amount
 
             self.pot += amount
             self.bet = amount
-            return self.nextPlayer()
+            return self.next_player()
         else:
             return 2
 
     def call(self, sid):
-        playerData = self.players[self.sidToPlayer[sid]]
-        cost = self.bet - playerData.bet
+        pdata = self.players[self.sid_to_player[sid]]
+        cost = self.bet - pdata.bet
 
-        if self.canICall(sid):
-            playerData.credits -= cost
-            playerData.bet += cost
+        if self.can_i_call(sid):
+            pdata.credits -= cost
+            pdata.bet += cost
 
             self.pot += cost
-            return self.nextPlayer()
+            return self.next_player()
         else:
             return 2
 
     def raiseBet(self, sid, amount):
-        playerData = self.players[self.sidToPlayer[sid]]
-        cost = self.bet - playerData.bet
+        pdata = self.players[self.sid_to_player[sid]]
+        cost = self.bet - pdata.bet
 
-        if self.canIRaise(sid) and amount > 0 and playerData.credits >= cost + amount:
-            playerData.credits -= amount + cost
-            playerData.bet += amount + cost
+        if self.can_i_raise(sid) and amount > 0 and pdata.credits >= cost + amount:
+            pdata.credits -= amount + cost
+            pdata.bet += amount + cost
 
             self.pot += amount + cost
             self.bet += amount
-            return self.nextPlayer()
+            return self.next_player()
         else:
             return 2
 
     def fold(self, sid):
-        playerData = self.players[self.sidToPlayer[sid]]
+        pdata = self.players[self.sid_to_player[sid]]
 
-        if self.canIFold(sid):
-            playerData.fold = True
-            self.playersNum -= 1
+        if self.can_i_fold(sid):
+            pdata.fold = True
+            self.players_num -= 1
 
-            if self.playersNum <= 1:
+            if self.players_num <= 1:
                 for table in self.tables:
                     table.show_card(len(table.cards))
                 return self.end()
-            return self.nextPlayer()
+            return self.next_player()
         else:
             return 2
 
     def allin(self, sid):
-        playerData = self.players[self.sidToPlayer[sid]]
-        amount = playerData.credits
-        cost = self.bet - playerData.bet
+        pdata = self.players[self.sid_to_player[sid]]
+        amount = pdata.credits
+        cost = self.bet - pdata.bet
 
-        if self.canIAllin(sid):
-            playerData.allin = True
-            playerData.credits = 0
-            playerData.bet += amount
+        if self.can_i_allin(sid):
+            pdata.allin = True
+            pdata.credits = 0
+            pdata.bet += amount
 
             self.pot += amount
             self.bet += amount - cost
-            return self.nextPlayer()
+            return self.next_player()
         else:
             return 2
 
     def again(self):
-        self.roundNum = 0
+        self.round_num = 0
         self.tables = []
         self.bet = 1
         self.pack = Pack()
-        self.isEnd = False
+        self.is_end = False
         for player in self.players:
             player.bet = 0
             player.allin = False

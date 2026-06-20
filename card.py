@@ -4,10 +4,10 @@ class Card:
         self.number = number
         self.visibility = visibility
 
-    def isVisible(self):
+    def is_visible(self):
         return self.visibility
 
-    def makeVisible(self):
+    def make_visible(self):
         self.visibility = True
 
     def __str__(self):
