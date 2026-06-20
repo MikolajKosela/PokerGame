@@ -78,14 +78,62 @@ class Game:
         if self.whoseRoundIs >= len(self.players):
             return self.nextRound()
 
+    def canICheck(self, sid):
+        playerData = self.players[self.sidToPlayer[sid]]
+
+        if playerData.allin or self.bet == playerData.bet:
+            return 1
+        return 0
+
+    def canIBet(self, sid):
+        playerData = self.players[self.sidToPlayer[sid]]
+
+        if not playerData.allin and self.roundNum % 2 == 0 and self.bet == 0 and playerData.credits > 0:
+            return 1
+        return 0
+
+    def canICall(self, sid):
+        playerData = self.players[self.sidToPlayer[sid]]
+        cost = self.bet - playerData.bet
+
+        if not playerData.allin and self.bet > playerData.bet and playerData.credits >= cost:
+            return 1
+        return 0
+
+    def canIRaise(self, sid):
+        playerData = self.players[self.sidToPlayer[sid]]
+
+        if not playerData.allin and self.roundNum % 2 == 0 and self.bet > 0 and playerData.credits > self.bet:
+            return 1
+        return 0
+
+    def canIFold(self, sid):
+        playerData = self.players[self.sidToPlayer[sid]]
+
+        if not playerData.allin:
+            return 1
+        return 0
+
+    def canIAllin(self, sid):
+        playerData = self.players[self.sidToPlayer[sid]]
+
+        if not playerData.allin and playerData.credits > 0 and (self.roundNum % 2 == 0 or self.bet > playerData.bet):
+            return 1
+        return 0
+
     def check(self, sid):
-        return self.nextPlayer()
+        playerData = self.players[self.sidToPlayer[sid]]
+
+        if self.canICheck(sid):
+            return self.nextPlayer()
 
     def makeBet(self, sid, amount):
         playerData = self.players[self.sidToPlayer[sid]]
-        if playerData.credits >= amount and amount > 0:
+
+        if self.canIBet(sid) and amount > 0 and playerData.credits >= amount:
             playerData.credits -= amount
             playerData.bet += amount
+
             self.pot += amount
             self.bet = amount
             return self.nextPlayer()
@@ -93,42 +141,51 @@ class Game:
     def call(self, sid):
         playerData = self.players[self.sidToPlayer[sid]]
         cost = self.bet - playerData.bet
-        print(cost)
-        if playerData.credits >= cost:
+
+        if self.canICall(sid):
             playerData.credits -= cost
             playerData.bet += cost
+
             self.pot += cost
             return self.nextPlayer()
 
     def raiseBet(self, sid, amount):
         playerData = self.players[self.sidToPlayer[sid]]
         cost = self.bet - playerData.bet
-        if playerData.credits >= amount + cost and amount > 0:
+
+        if self.canIBet(sid) and amount > 0 and playerData.credits >= cost + amount:
             playerData.credits -= amount + cost
             playerData.bet += amount + cost
+
             self.pot += amount + cost
             self.bet += amount
             return self.nextPlayer()
 
     def fold(self, sid):
         playerData = self.players[self.sidToPlayer[sid]]
-        playerData.fold = True
-        self.playersNum -= 1
-        if self.playersNum <= 1:
-            for table in self.tables:
-                table.show_card(len(table.cards))
-            return self.end()
-        return self.nextPlayer()
+
+        if self.canIFold(sid):
+            playerData.fold = True
+            self.playersNum -= 1
+
+            if self.playersNum <= 1:
+                for table in self.tables:
+                    table.show_card(len(table.cards))
+                return self.end()
+            return self.nextPlayer()
 
     def allin(self, sid):
         playerData = self.players[self.sidToPlayer[sid]]
-        playerData.allin = True
         amount = playerData.credits
         cost = self.bet - playerData.bet
-        playerData.credits = 0
-        playerData.bet += amount
-        self.pot += amount
-        self.bet += amount - cost
+
+        if self.canIAllin(sid):
+            playerData.allin = True
+            playerData.credits = 0
+            playerData.bet += amount
+
+            self.pot += amount
+            self.bet += amount - cost
         return self.nextPlayer()
 
     def again(self):

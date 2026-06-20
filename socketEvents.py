@@ -111,21 +111,25 @@ def sendData(sid):
         myData = game.players[myID]
         commonCards = game.tables[-1].to_dict()
         playerCards = game.tables[myID].to_dict()
+
         curID = game.whoseRoundIs
         if curID >= 0:
             curNick = game.players[curID].nickname
+
         pot = game.pot
         bet = game.bet - myData.bet
+
         roundNum = game.roundNum
         yourBet = myData.bet
         yourCredits = myData.credits
+
         buttons = {
-            "check": myData.allin or game.bet == myData.bet,
-            "bet": not myData.allin and game.roundNum % 2 == 0 and game.bet == 0 and myData.credits > 0,
-            "call": not myData.allin and game.bet > myData.bet and game.bet <= myData.credits,
-            "raise": not myData.allin and game.roundNum % 2 == 0 and game.bet > 0 and myData.credits > game.bet,
-            "fold": not myData.allin, 
-            "allin": myData.credits > 0 and (game.roundNum % 2 == 0 or game.bet > myData.credits)
+            "check": game.canICheck(sid),
+            "bet": game.canIBet(sid),
+            "call": game.canICall(sid),
+            "raise": game.canIRaise(sid),
+            "fold": game.canIFold(sid),
+            "allin": game.canIAllin(sid),
         }
 
     roundData = {
