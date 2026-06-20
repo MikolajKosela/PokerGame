@@ -13,7 +13,6 @@ class Game:
         self.pack = Pack()
         self.pot = 0
         self.bet = 1
-        self.players_num = 0
         self.round_num = 0
         self.whose_round_is = -1
 
@@ -26,10 +25,13 @@ class Game:
         elif any(player.nickname == nickname for player in self.players):
             return 3
         else :
-            self.players.append(Player(nickname, credits, self.players_num, sid))
-            self.players_num += 1
-            if self.players_num != len(self.players):
-                return 3
+            self.players.append(Player(nickname, credits, self.players_num(), sid))
+
+    def players_num(self):
+        return len(self.players) 
+    
+    def active_players(self):
+        return [player for player in self.players if not player.fold]
 
     def start(self):
         self.pack.shuffle_cards()
@@ -200,9 +202,7 @@ class Game:
 
         if self.can_i_fold(sid):
             pdata.fold = True
-            self.players_num -= 1
-
-            if self.players_num <= 1:
+            if len(self.active_players()) <= 1:
                 return self.end()
             return self.next_player()
         else:

@@ -104,7 +104,7 @@ def send_data(sid):
         state = check_state(sid)
         print(" ID GRACZA ", my_ID, game.players[my_ID].nickname)
 
-    players_num = len(game.players)
+    players_num = game.players_num()
     players = [player.to_dict() for player in game.players]
 
     if (game.whose_round_is >= 0 or game.is_end()) and my_ID != None:
@@ -187,7 +187,7 @@ def handshake(data):
 
 @socketio.on("lobbyUpdateRequest")
 def lobby_update_request():
-    socketio.emit("lobbyUpdate", {"playersNum": len(game.players)})
+    socketio.emit("lobbyUpdate", {"playersNum": game.players_num()})
 
 @socketio.on("join")
 def join(data):
@@ -200,7 +200,7 @@ def join(data):
         send_error_message("Gracz o takim nicku już istnieje", request.sid)
     else : 
         socketio.emit("joined", {"token": grant_token()}, to=request.sid)
-        socketio.emit("lobbyUpdate", {"players_num": len(game.players)})
+        socketio.emit("lobbyUpdate", {"players_num": game.players_num()})
         refresh_data()
 
 @socketio.on("startGame")
