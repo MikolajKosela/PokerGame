@@ -9,7 +9,7 @@ class Table:
     def __str__(self):
         return " ".join(str(card) for card in self.cards)
 
-    def show_card(self, num):
+    def show_cards(self, num):
         for card in self.cards:
             if not card.is_visible():
                 card.make_visible()

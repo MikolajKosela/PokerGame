@@ -80,17 +80,15 @@ class Game:
         # (z pominięciem ostatniego [:-1], wspólnego stołu)
         if self.round_num == 2:
             for table in self.tables[:-1]:
-                for card in table.cards:
-                    card.make_visible()
+                table.show_cards(2)
 
         # Odkryj trzy wspólne karty
         elif self.round_num == 4:
-            for i in range(0, 3):
-                self.tables[-1].cards[i].make_visible()
+            self.tables[-1].show_cards(3)
 
         # Odkryj po jednej wspólnej karcie
         elif self.round_num == 6 or self.round_num == 8:
-            self.tables[-1].cards[int(self.round_num / 2)].make_visible()
+            self.tables[-1].show_cards(1)
 
         # Zakończ rozgrywkę
         elif self.round_num == 10:
@@ -202,7 +200,7 @@ class Game:
 
             if self.players_num <= 1:
                 for table in self.tables:
-                    table.show_card(len(table.cards))
+                    table.show_cards(5)
                 return self.end()
             return self.next_player()
         else:
