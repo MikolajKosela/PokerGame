@@ -126,6 +126,8 @@ class Game:
 
         if self.canICheck(sid):
             return self.nextPlayer()
+        else:
+            return 2
 
     def makeBet(self, sid, amount):
         playerData = self.players[self.sidToPlayer[sid]]
@@ -137,6 +139,8 @@ class Game:
             self.pot += amount
             self.bet = amount
             return self.nextPlayer()
+        else:
+            return 2
 
     def call(self, sid):
         playerData = self.players[self.sidToPlayer[sid]]
@@ -148,6 +152,8 @@ class Game:
 
             self.pot += cost
             return self.nextPlayer()
+        else:
+            return 2
 
     def raiseBet(self, sid, amount):
         playerData = self.players[self.sidToPlayer[sid]]
@@ -160,6 +166,8 @@ class Game:
             self.pot += amount + cost
             self.bet += amount
             return self.nextPlayer()
+        else:
+            return 2
 
     def fold(self, sid):
         playerData = self.players[self.sidToPlayer[sid]]
@@ -173,6 +181,8 @@ class Game:
                     table.show_card(len(table.cards))
                 return self.end()
             return self.nextPlayer()
+        else:
+            return 2
 
     def allin(self, sid):
         playerData = self.players[self.sidToPlayer[sid]]
@@ -186,7 +196,9 @@ class Game:
 
             self.pot += amount
             self.bet += amount - cost
-        return self.nextPlayer()
+            return self.nextPlayer()
+        else:
+            return 2
 
     def again(self):
         self.roundNum = 0

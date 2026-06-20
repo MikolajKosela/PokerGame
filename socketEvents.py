@@ -163,6 +163,9 @@ def refreshData():
         print(player.nickname)
         sendData(player.sid)
 
+def sendErrorMessage(message, sid):
+    socketio.emit("error", {"info": message}, to=sid)
+
 @socketio.on("handshake")
 def handshake(data):
     ok = False
@@ -209,14 +212,11 @@ def gameDataRequest():
 @socketio.on("check")
 def check():
     print("check")
-
-    myData = game.players[game.sidToPlayer[request.sid]]
-    if not(myData.allin or game.bet == myData.bet):
-        socketio.emit("error", {"info": "serwer odrzucił przekazane dane"}, to=request.sid)
-        return False
     
-    game.check(request.sid)
-    refreshData()
+    if game.check(request.sid) == 2:
+        sendErrorMessage("Serwer odmówił wykonania tej akcji", request.sid)
+    else:
+        refreshData()
 
 @socketio.on("bet")
 def bet(data):
@@ -225,26 +225,19 @@ def bet(data):
     amount = int(amount)
     print("bet: ", amount)
 
-    myData = game.players[game.sidToPlayer[request.sid]]
-
-    if not(not myData.allin and game.roundNum % 2 == 0 and game.bet == 0):
-        socketio.emit("error", {"info": "serwer odrzucił przekazane dane"}, to=request.sid)
-        return False
-
-    game.makeBet(request.sid, amount)
-    refreshData()
+    if game.makeBet(request.sid, amount) == 2:
+        sendErrorMessage("Serwer odmówił wykonania tej akcji", request.sid)
+    else:
+        refreshData()
 
 @socketio.on("call")
 def call():
     print("call")
-
-    myData = game.players[game.sidToPlayer[request.sid]]
-    if not(not myData.allin and game.bet > myData.bet):
-        socketio.emit("error", {"info": "serwer odrzucił przekazane dane"}, to=request.sid)
-        return False
     
-    game.call(request.sid)
-    refreshData()
+    if game.call(request.sid) == 2:
+        sendErrorMessage("Serwer odmówił wykonania tej akcji", request.sid)
+    else:
+        refreshData()
 
 @socketio.on("raise")
 def raiseBet(data):
@@ -253,40 +246,28 @@ def raiseBet(data):
     amount = int(amount)
     print("raise: ", amount)
 
-    myData = game.players[game.sidToPlayer[request.sid]]
-
-    if not(not myData.allin and game.roundNum % 2 == 0 and game.bet > 0):
-        socketio.emit("error", {"info": "serwer odrzucił przekazane dane"}, to=request.sid)
-        return False
-
-    game.raiseBet(request.sid, amount)
-    refreshData()
+    if game.raiseBet(request.sid, amount) == 2:
+        sendErrorMessage("Serwer odmówił wykonania tej akcji", request.sid)
+    else:
+        refreshData()
 
 @socketio.on("fold")
 def fold():
     print("fold")
 
-    myData = game.players[game.sidToPlayer[request.sid]]
-
-    if not(not myData.allin):
-        socketio.emit("error", {"info": "serwer odrzucił przekazane dane"}, to=request.sid)
-        return False
-    
-    game.fold(request.sid)
-    refreshData()
+    if game.fold(request.sid) == 2:
+        sendErrorMessage("Serwer odmówił wykonania tej akcji", request.sid)
+    else:
+        refreshData()
 
 @socketio.on("allin")
 def allin():
     print("allin")
 
-    myData = game.players[game.sidToPlayer[request.sid]]
-
-    if not(myData.credits > 0 and game.roundNum % 2 == 0):
-        socketio.emit("error", {"info": "serwer odrzucił przekazane dane"}, to=request.sid)
-        return False
-    
-    game.allin(request.sid)
-    refreshData()
+    if game.allin(request.sid) == 2:
+        sendErrorMessage("Serwer odmówił wykonania tej akcji", request.sid)
+    else:
+        refreshData()
 
 @socketio.on("winners")
 def winners(data):
