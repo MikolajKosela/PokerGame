@@ -111,10 +111,10 @@ export function checkState(data, where) {
 export function processGameData(data, where) {
     console.log(data);
     if (checkState(data, where) == 0) {
-        clearContent("infoBox");
         window.location.href = data.state;
         return 0;
     } else {
+        clearContent("infoBox");
         updateRound(data.roundData);
         updateCommonCards(data.commonCards);
         updatePlayerCards(data.playerCards);
@@ -144,14 +144,20 @@ function addMessage(id, content, style) {
     const p = document.createElement("p");
     p.innerHTML = content;
     p.className = style;
-    div.append(p);
+    div.prepend(p);
 
     while (div.children.length > 5) {
-        div.removeChild(div.firstChild);
+        div.removeChild(div.lastChild);
     }
 }
 
 socket.on("message", (data) => {
     console.log(data);
     addMessage("infoBox", data.content, data.style);
+})
+
+socket.on("logs", (data) => {
+    for(const log of data) {
+        addMessage("gameHistory", log.message);
+    }
 })

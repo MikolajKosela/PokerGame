@@ -61,6 +61,19 @@ def build_possible_moves(sid):
     }
     return possibilities
 
+def build_game_logs():
+    logs = []
+
+    for log in game.event_queue:
+        logs.append({"message": log.display_time + " - " + log.message})
+    return logs
+
+def send_logs():
+    if len(game.event_queue) > 0:
+        logs = build_game_logs()
+        game.event_queue = []
+        socketio.emit("logs", logs)
+
 def send_data(sid):
     print("Wysyłam dane do gracza: ", sid)
     state = "/"
@@ -118,7 +131,6 @@ def send_data(sid):
                 "fold": False,
                 "allin": False,
             }
-
 
     round_data = {
         "yourRound": your_round,
