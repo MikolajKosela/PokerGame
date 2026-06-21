@@ -15,6 +15,7 @@ class Game:
         self.bet = 1
         self.round_num = -1
         self.whose_round_is = -1
+        self.last_round_skipped = False
 
     def append_player(self, nickname, credits, sid):
         # return codes: 
@@ -55,6 +56,7 @@ class Game:
 
     def next_round(self):
         self.whose_round_is = 0
+        self.last_round_skipped = False
 
         call_needed = False
         if (
@@ -71,6 +73,7 @@ class Game:
         # Jeżeli wszyscy gracze wyrównali swoje zaklady, to
         # można pominąć turę wyrównywania 
         if not call_needed and self.round_num % 2 == 0:
+            self.last_round_skipped = True
             self.round_num += 1
         self.round_num += 1
 

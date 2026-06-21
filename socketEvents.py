@@ -79,6 +79,17 @@ def check_state(sid):
     print("Dostałem zapytanie od", cur_ID, nickname, "wysyłam", state)
     return state
 
+def build_possible_moves(sid):
+    possibilities = {
+        "check": game.can_i_check(sid),
+        "bet": game.can_i_bet(sid),
+        "call": game.can_i_call(sid),
+        "raise": game.can_i_raise(sid),
+        "fold": game.can_i_fold(sid),
+        "allin": game.can_i_allin(sid),
+    }
+    return possibilities
+
 def send_data(sid):
     print("Wysyłam dane do gracza: ", sid)
     state = "/"
@@ -92,6 +103,7 @@ def send_data(sid):
     round_num = None
     your_bet = None
     your_credits = None 
+    your_round_skipped = None
 
     common_cards = None 
     player_cards = None
@@ -123,14 +135,7 @@ def send_data(sid):
         your_bet = my_data.bet
         your_credits = my_data.credits
 
-        buttons = {
-            "check": game.can_i_check(sid),
-            "bet": game.can_i_bet(sid),
-            "call": game.can_i_call(sid),
-            "raise": game.can_i_raise(sid),
-            "fold": game.can_i_fold(sid),
-            "allin": game.can_i_allin(sid),
-        }
+        buttons = build_possible_moves(sid)
 
     round_data = {
         "curID": cur_ID,
@@ -141,6 +146,7 @@ def send_data(sid):
         "round_num": round_num,
         "yourBet": your_bet,
         "yourCredits": your_credits,
+        "lastRoundSkipped": game.last_round_skipped,
     }
     
     data = {

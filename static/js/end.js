@@ -29,6 +29,7 @@ socket.on("summary", (data) => {
     div.innerHTML = `<h3>${player.nickname} - ${player.credits}</h3>`;
 
     const list = document.createElement("ul");
+    list.className = "cards";
 
     drawCards(player.cards, list);
 

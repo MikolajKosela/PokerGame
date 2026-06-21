@@ -19,6 +19,17 @@ function updateRound(data) {
     if (callBut != null) {
         callBut.innerHTML = "Sprawdź ( " + data.bet + " )";
     }
+
+    const infoBox = document.getElementById("infoBox");
+    if (infoBox != null) {
+        infoBox.innerHTML = '';
+        if (data.lastRoundSkipped == true) {
+            infoBox.innerHTML = "Osatnia runda została pominięta, <br>ponieważ żaden z graczy nie miał decyzji do podjęcia<br>";
+        }
+        if (data.yourRoundSkipped == true) {
+            infoBox.innerHTML += "Twoja kolejka została pominięta, <br>poniważ nie miałeś decyzji do pojęcia"
+        }
+    }
 }
 
 export function drawCards(cards, list) {
