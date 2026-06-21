@@ -16,11 +16,11 @@ function updateRound(data) {
     }
 
     if (data.lastRoundSkipped == true) {
-        addMessage("infoBox", "Poprzednia runda została pominięta, <br>ponieważ żaden z graczy nie miał decyzji do podjęcia<br>");
+        addMessage("infoBox", "Poprzednia runda została pominięta, <br>ponieważ żaden z graczy nie miał decyzji do podjęcia<br>", "info");
     }
 
     if (data.yourRoundSkipped == true) {
-        addMessage("infoBox", "Twoja kolejka została pominięta, <br>poniważ nie miałeś decyzji do pojęcia<br>");
+        addMessage("infoBox", "Twoja kolejka została pominięta, <br>poniważ nie miałeś decyzji do pojęcia<br>", "info");
     }
 }
 
@@ -130,27 +130,28 @@ function clearContent(id) {
     }
 
     while (div.children.length > 0) {
-        div.removeChild(box.firstChild);
+        div.removeChild(div.firstChild);
     }
 }
 
 function addMessage(id, content, style) {
-    const box = document.getElementById(id);
+    const div = document.getElementById(id);
 
-    if (box == null) {
+    if (div == null) {
         return;
     }
 
     const p = document.createElement("p");
     p.innerHTML = content;
     p.className = style;
-    box.append(p);
+    div.append(p);
 
-    while (box.children.length > 5) {
-        box.removeChild(box.firstChild);
+    while (div.children.length > 5) {
+        div.removeChild(div.firstChild);
     }
 }
 
 socket.on("message", (data) => {
+    console.log(data);
     addMessage("infoBox", data.content, data.style);
 })

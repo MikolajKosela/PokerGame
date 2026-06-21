@@ -21,5 +21,8 @@ def send_error_message(content, sid):
 def send_info_message(content, sid):
     socketio.emit("message", {"content": content, "style": "info"}, to=sid)
 
+def send_message_to_everyone(content):
+    socketio.emit("message", {"content": content, "style": None})
+
 
 

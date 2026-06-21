@@ -10,7 +10,7 @@ from app import app, game, socketio
 
 from auth import grant_token, check_token 
 from serialization import send_data
-from utils import refresh_data, send_error_message, send_info_message
+from utils import refresh_data, send_error_message, send_info_message, send_message_to_everyone
 
 
 @socketio.on("startDataRequest")
