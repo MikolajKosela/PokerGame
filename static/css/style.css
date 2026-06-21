@@ -128,14 +128,6 @@ input[type="number"] {
   display: none;
 }
 
-.err {
-  color: #950606
-}
-
-.info {
-  color: #111184
-}
-
 .cards {
     list-style: none;
     padding: 0;
@@ -153,6 +145,23 @@ input[type="number"] {
 
     text-align: center;
     line-height: 90px;
+}
+.messageBox {
+    font-size: 16px;
+    line-height: 1.1;
+    color: #111184
+}
+
+.messageBox p {
+    margin: 2px 0;
+}
+
+.err {
+  color: #950606
+}
+
+.info {
+  color: #111184
 }
 
 /*

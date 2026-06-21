@@ -136,7 +136,7 @@ function clearContent(id) {
     }
 }
 
-function addMessage(id, content) {
+function addMessage(id, content, style) {
     const box = document.getElementById(id);
 
     if (box == null) {
@@ -145,6 +145,7 @@ function addMessage(id, content) {
 
     const p = document.createElement("p");
     p.innerHTML = content;
+    p.className = style;
     box.append(p);
 
     while (box.children.length > 5) {
@@ -152,10 +153,6 @@ function addMessage(id, content) {
     }
 }
 
-socket.on("error", (data) => {
-    addMessage("errorInfo", data.content);
-})
-
-socket.on("info", (data) => {
-    addMessage("infoBox", data.content);
+socket.on("message", (data) => {
+    addMessage("infoBox", data.content, data.style);
 })

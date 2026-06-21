@@ -173,11 +173,11 @@ def refresh_data():
         print(player.nickname)
         send_data(player.sid)
 
-def send_error_message(message, sid):
-    socketio.emit("error", {"content": message}, to=sid)
+def send_error_message(content, sid):
+    socketio.emit("message", {"content": content, "style": "err"}, to=sid)
 
-def send_info_message(message):
-    socketio.emit("info", {"content": message}, to=sid)
+def send_info_message(content, sid):
+    socketio.emit("message", {"content": content, "style": "info"}, to=sid)
 
 @socketio.on("handshake")
 def handshake(data):
