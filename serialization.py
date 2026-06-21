@@ -95,7 +95,8 @@ def send_data(sid):
         common_cards = game.tables[-1].to_dict()
         player_cards = game.tables[my_ID].to_dict()
 
-        cur_nick = game.players[game.whose_round_is].nickname
+        if game.whose_round_is >= 0:    
+            cur_nick = game.players[game.whose_round_is].nickname
         your_round = my_ID == game.whose_round_is
 
         pot = game.pot
