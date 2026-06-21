@@ -111,65 +111,21 @@ class Game:
         self.whose_round_is += 1
         if self.whose_round_is >= len(self.players):
             return self.next_round()
-            
-    # pdata = player's data
-    def can_i_check(self, sid):
-        pdata = self.players[self.sid_to_player[sid]]
-
-        if pdata.allin or self.bet == pdata.bet:
-            return 1
-        return 0
-
-    def can_i_bet(self, sid):
-        pdata = self.players[self.sid_to_player[sid]]
-
-        if not pdata.allin and self.round_num % 2 == 0 and self.bet == 0 and pdata.credits > 0:
-            return 1
-        return 0
-
-    def can_i_call(self, sid):
-        pdata = self.players[self.sid_to_player[sid]]
-        cost = self.bet - pdata.bet
-
-        if not pdata.allin and self.bet > pdata.bet and pdata.credits >= cost:
-            return 1
-        return 0
-
-    def can_i_raise(self, sid):
-        pdata = self.players[self.sid_to_player[sid]]
-
-        if not pdata.allin and self.round_num % 2 == 0 and self.bet > 0 and pdata.credits > self.bet:
-            return 1
-        return 0
-
-    def can_i_fold(self, sid):
-        pdata = self.players[self.sid_to_player[sid]]
-
-        if not pdata.allin:
-            return 1
-        return 0
-
-    def can_i_allin(self, sid):
-        pdata = self.players[self.sid_to_player[sid]]
-
-        if not pdata.allin and pdata.credits > 0 and (self.round_num % 2 == 0 or self.bet > pdata.bet + pdata.credits):
-            return 1
-        return 0
-
+  
     def check(self, sid):
-        pdata = self.players[self.sid_to_player[sid]]
+        player = self.players[self.sid_to_player[sid]]
 
-        if self.can_i_check(sid):
+        if player.can_check(self):
             return self.next_player()
         else:
             return 2
 
     def make_bet(self, sid, amount):
-        pdata = self.players[self.sid_to_player[sid]]
+        player = self.players[self.sid_to_player[sid]]
 
-        if self.can_i_bet(sid) and amount > 0 and pdata.credits >= amount:
-            pdata.credits -= amount
-            pdata.bet += amount
+        if player.can_bet(self) and amount > 0 and player.credits >= amount:
+            player.credits -= amount
+            player.bet += amount
 
             self.pot += amount
             self.bet = amount
@@ -178,12 +134,12 @@ class Game:
             return 2
 
     def call(self, sid):
-        pdata = self.players[self.sid_to_player[sid]]
-        cost = self.bet - pdata.bet
+        player = self.players[self.sid_to_player[sid]]
+        cost = self.bet - player.bet
 
-        if self.can_i_call(sid):
-            pdata.credits -= cost
-            pdata.bet += cost
+        if player.can_call(self):
+            player.credits -= cost
+            player.bet += cost
 
             self.pot += cost
             return self.next_player()
@@ -191,12 +147,12 @@ class Game:
             return 2
 
     def raiseBet(self, sid, amount):
-        pdata = self.players[self.sid_to_player[sid]]
-        cost = self.bet - pdata.bet
+        player = self.players[self.sid_to_player[sid]]
+        cost = self.bet - player.bet
 
-        if self.can_i_raise(sid) and amount > 0 and pdata.credits >= cost + amount:
-            pdata.credits -= amount + cost
-            pdata.bet += amount + cost
+        if player.can_raise(self) and amount > 0 and player.credits >= cost + amount:
+            player.credits -= amount + cost
+            player.bet += amount + cost
 
             self.pot += amount + cost
             self.bet += amount
@@ -205,10 +161,10 @@ class Game:
             return 2
 
     def fold(self, sid):
-        pdata = self.players[self.sid_to_player[sid]]
+        player = self.players[self.sid_to_player[sid]]
 
-        if self.can_i_fold(sid):
-            pdata.fold = True
+        if player.can_fold(self):
+            player.fold = True
             if len(self.active_players()) <= 1:
                 return self.end()
             return self.next_player()
@@ -216,14 +172,14 @@ class Game:
             return 2
 
     def allin(self, sid):
-        pdata = self.players[self.sid_to_player[sid]]
-        amount = pdata.credits
-        cost = self.bet - pdata.bet
+        player = self.players[self.sid_to_player[sid]]
+        amount = player.credits
+        cost = self.bet - player.bet
 
-        if self.can_i_allin(sid):
-            pdata.allin = True
-            pdata.credits = 0
-            pdata.bet += amount
+        if player.can_allin(self):
+            player.allin = True
+            player.credits = 0
+            player.bet += amount
 
             self.pot += amount
             self.bet += amount - cost

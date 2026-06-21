@@ -80,13 +80,15 @@ def check_state(sid):
     return state
 
 def build_possible_moves(sid):
+    player = game.players[game.sid_to_player[sid]]
+
     possibilities = {
-        "check": game.can_i_check(sid),
-        "bet": game.can_i_bet(sid),
-        "call": game.can_i_call(sid),
-        "raise": game.can_i_raise(sid),
-        "fold": game.can_i_fold(sid),
-        "allin": game.can_i_allin(sid),
+        "check": player.can_check(game),
+        "bet": player.can_bet(game),
+        "call": player.can_call(game),
+        "raise": player.can_raise(game),
+        "fold": player.can_fold(game),
+        "allin": player.can_allin(game),
     }
     return possibilities
 
