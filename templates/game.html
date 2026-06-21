@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <link
+      rel="stylesheet"
+      href="/static/css/style.css"
+    />
+
+    <title>Poker online</title>
+  </head>
+  <body>
+    <h2 id="roundInfo">...</h2>
+
+    <div id="commoonCards">
+       <h2>Wspólne karty</h2>
+        <ul id="commonCards" class="cards"></ul>
+    </div>
+
+    <div id="yourData">
+        <h2>Twoje karty</h2>
+        <ul id="yourCards" class="cards"></ul>
+        <h3 id="pot"></h3>
+        <h3 id="credits"></h3>
+    </div>
+
+    <div id="wait" class="hidden">
+        <h2 id="curNick">Akcję wykonuje gracz: ...</h3>
+    </div>
+
+    <div id="action" class="=hidden">
+        <button id="check" class="hidden" type="submit">Czekaj</button>
+
+        <div id="betCont" class="hidden">
+        <button id="bet" class="btnl" type="submit">Postaw zakład</button>
+        <input id="betValue" class="numInput" type="number" min="1" step="1" value="1">
+        <button id="betMinus" class="btn" type="button">-</button>
+        <button id="betPlus" class="btnr" type="button">+</button>
+        </div>
+
+        <button id="call" class="hidden" type="submit">Sprawdź (...)</button>
+
+        <div id="raiseCont" class="hidden">
+        <button id="raise" class="btnl" type="submit">Podbij</button>
+        <input id="raiseValue" class="numInput" type="number" min="1" step="1" value="1">
+        <button id="raiseMinus" class="btn" type="button">-</button>
+        <button id="raisePlus" class="btnr" type="button">+</button>
+        </div>
+
+        <button id="fold" class="hidden" type="submit">Pasuj</button>
+        <button id="allin" class="hidden" type="submit">ALL IN 🔥🔥🔥</button>
+    </div>
+
+
+
+    <div id="playersList">
+        <h3>Lista graczy:</h3>
+        <ul id="players"></ul>
+    </div>
+
+    <div id="infoBox" class="messageBox"></div>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="/static/js/socket.js"></script>
+    <script src="/static/js/game.js" type="module"></script>
+
+  </body>
+</html>

@@ -29,7 +29,7 @@ function join() {
 
 socket.on("startData", (data) => {
   console.log(data);
-  const info = document.getElementById("infoBox");
+  const info = document.getElementById("playersInfo");
   if (info != null) {
     if (data.started == true) {
       info.innerHTML = "Nie możesz dołączyć w trakcie trwającej rozgrywki"; 

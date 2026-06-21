@@ -111,12 +111,10 @@ export function checkState(data, where) {
 export function processGameData(data, where) {
     console.log(data);
     if (checkState(data, where) == 0) {
+        clearContent("infoBox");
         window.location.href = data.state;
         return 0;
     } else {
-        clearContent("errorInfo");
-        clearContent("infoBox");
-
         updateRound(data.roundData);
         updateCommonCards(data.commonCards);
         updatePlayerCards(data.playerCards);
@@ -126,13 +124,13 @@ export function processGameData(data, where) {
 }
 
 function clearContent(id) {
-    const box = document.getElementById(id);
-    if (box == null) {
+    const div = document.getElementById(id);
+    if (div == null) {
         return;
     }
 
-    while (box.children.length > 0) {
-        box.removeChild(box.firstChild);
+    while (div.children.length > 0) {
+        div.removeChild(box.firstChild);
     }
 }
 

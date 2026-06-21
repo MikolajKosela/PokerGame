@@ -17,15 +17,53 @@ function initActions() {
   document.getElementById("raisePlus").addEventListener("click", () => changeValue("raiseValue", 1));
 }
 
-socket.on("gameData", (data) => {
-  const roundInfo = document.getElementById("roundInfo");
-  if (roundInfo != null) {
-    roundInfo.innerHTML = "Twoja kolej (trwa runda nr. " + data.roundData.roundNum + ")";
-  }
+function action(data) {
+    const div = document.getElementById("action");
+    div.className = "";
 
-  if (processGameData(data, window.location.pathname) == 1) {
+    const prevDiv = document.getElementById("wait");
+    prevDiv.className = "hidden";
+
+    const roundInfo = document.getElementById("roundInfo");
+
+    if (roundInfo != null) {
+        roundInfo.innerHTML = "Twoja kolej (trwa runda nr. " + data.roundData.roundNum + ")";
+    }
+
     updateButtons(data.buttons);
-  }
+}
+
+function wait(data) {
+    const div = document.getElementById("wait");
+    div.className = "";
+
+    const prevDiv = document.getElementById("action");
+    prevDiv.className = "hidden";
+
+    const roundInfo = document.getElementById("roundInfo");
+
+    if (roundInfo != null) {
+        roundInfo.innerHTML = "Poczekaj (trwa runda nr. " + data.roundData.roundNum + ")";
+    }
+        
+    const curNick = document.getElementById("curNick");
+    if (curNick != null) {
+        curNick.innerHTML = "Akcję wykonuje gracz: " + data.roundData.curNick;
+    }
+
+}
+
+socket.on("gameData", (data) => {
+    console.log("MAM dane");
+    if (processGameData(data, window.location.pathname) == 1) {  
+        if (data.roundData.yourRound == true) {
+            console.log("AKCJA");
+            action(data);
+        } else {
+            console.log("CZEKAJ");
+            wait(data);
+        }
+    }
 })
 
 function changeValue(where, howMuch) {

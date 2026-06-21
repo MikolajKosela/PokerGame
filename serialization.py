@@ -42,10 +42,8 @@ def check_state(sid):
         state = "/end"
     elif game.whose_round_is == -1:
         state = "/lobby"
-    elif cur_ID == game.whose_round_is:
-        state = "/action"
-    elif cur_ID != game.whose_round_is:
-        state = "/wait"
+    else:
+        state="/game"
 
     print("Dostałem zapytanie od", cur_ID, nickname, "wysyłam", state)
     return state
@@ -68,7 +66,7 @@ def send_data(sid):
     state = "/"
     my_ID = None
     my_data = None
-    cur_ID = None
+    your_round = None
     cur_nick = None
     players_num = None
     pot = None 
@@ -97,9 +95,8 @@ def send_data(sid):
         common_cards = game.tables[-1].to_dict()
         player_cards = game.tables[my_ID].to_dict()
 
-        cur_ID = game.whose_round_is
-        if cur_ID >= 0:
-            cur_nick = game.players[cur_ID].nickname
+        cur_nick = game.players[game.whose_round_is].nickname
+        your_round = my_ID == game.whose_round_is
 
         pot = game.pot
         bet = game.bet - my_data.bet
@@ -109,10 +106,21 @@ def send_data(sid):
         your_credits = my_data.credits
         your_round_skipped = my_data.last_round_skipped
 
-        buttons = build_possible_moves(sid)
+        if your_round == True:
+            buttons = build_possible_moves(sid)
+        else:
+            buttons = {
+                "check": False,
+                "bet": False,
+                "call": False,
+                "raise": False,
+                "fold": False,
+                "allin": False,
+            }
+
 
     round_data = {
-        "curID": cur_ID,
+        "yourRound": your_round,
         "curNick": cur_nick,
         "playersNum": players_num,
         "pot": pot, 

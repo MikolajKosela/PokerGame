@@ -20,3 +20,7 @@ def wait():
 @app.route("/end")
 def end():
     return render_template("end.html")
+
+@app.route("/game")
+def game():
+    return render_template("game.html")
