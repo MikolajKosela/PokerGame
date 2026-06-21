@@ -136,6 +136,7 @@ def send_data(sid):
         round_num = game.round_num
         your_bet = my_data.bet
         your_credits = my_data.credits
+        your_round_skipped = my_data.last_round_skipped
 
         buttons = build_possible_moves(sid)
 
@@ -149,6 +150,7 @@ def send_data(sid):
         "yourBet": your_bet,
         "yourCredits": your_credits,
         "lastRoundSkipped": game.last_round_skipped,
+        "yourRoundSkipped": your_round_skipped
     }
     
     data = {

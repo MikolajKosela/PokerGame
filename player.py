@@ -7,6 +7,7 @@ class Player:
         self.bet = 0
         self.allin = False
         self.fold = False
+        self.last_round_skipped = False
     
     def can_check(self, game):
         return (self.allin or self.bet == game.bet)
@@ -46,6 +47,14 @@ class Player:
                 game.round_num % 2 == 0
                 or game.bet > self.bet + self.credits
             )
+        )
+    
+    def can_skip_round(self, game):
+        return (
+            not self.can_bet(game)
+            and not self.can_call(game)
+            and not self.can_raise(game)
+            and not self.can_allin(game)
         )
 
     def to_dict(self):

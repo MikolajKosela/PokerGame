@@ -109,9 +109,18 @@ class Game:
             return self.end()
 
     def next_player(self):
-        self.whose_round_is += 1
-        if self.whose_round_is >= len(self.players):
-            return self.next_round()
+        while True:
+            self.whose_round_is += 1
+            if self.whose_round_is >= self.players_num():
+                return self.next_round()
+
+            player = self.players[self.whose_round_is]
+            player.last_round_skipped = False
+
+            if player.can_skip_round(self):
+                player.last_round_skipped = True
+            else:
+                break
   
     def check(self, sid):
         player = self.players[self.sid_to_player[sid]]
