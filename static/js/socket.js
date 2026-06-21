@@ -22,14 +22,3 @@ socket.on("handshakeAnswer", (data) => {
     }
     socket.emit("gameDataRequest");
 })
-
-socket.on("error", (data) => {
-    const info = document.getElementById("errorInfo");
-    const count = (info.innerHTML.match(/<br\s*\/?>/g) || []).length;
-    if (count > 3) {
-        info.innerHTML = "";
-    }
-    if (info != null) {
-        info.innerHTML += data.info + "<br>";
-    }
-})

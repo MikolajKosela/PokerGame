@@ -174,7 +174,10 @@ def refresh_data():
         send_data(player.sid)
 
 def send_error_message(message, sid):
-    socketio.emit("error", {"info": message}, to=sid)
+    socketio.emit("error", {"content": message}, to=sid)
+
+def send_info_message(message):
+    socketio.emit("info", {"content": message}, to=sid)
 
 @socketio.on("handshake")
 def handshake(data):

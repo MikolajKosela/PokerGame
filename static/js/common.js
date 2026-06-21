@@ -15,15 +15,12 @@ function updateRound(data) {
         callBut.innerHTML = "Sprawdź ( " + data.bet + " )";
     }
 
-    const infoBox = document.getElementById("infoBox");
-    if (infoBox != null) {
-        infoBox.innerHTML = '';
-        if (data.lastRoundSkipped == true) {
-            infoBox.innerHTML = "Poprzednia runda została pominięta, <br>ponieważ żaden z graczy nie miał decyzji do podjęcia<br>";
-        }
-        if (data.yourRoundSkipped == true) {
-            infoBox.innerHTML += "Twoja kolejka została pominięta, <br>poniważ nie miałeś decyzji do pojęcia<br>"
-        }
+    if (data.lastRoundSkipped == true) {
+        addMessage("infoBox", "Poprzednia runda została pominięta, <br>ponieważ żaden z graczy nie miał decyzji do podjęcia<br>");
+    }
+
+    if (data.yourRoundSkipped == true) {
+        addMessage("infoBox", "Twoja kolejka została pominięta, <br>poniważ nie miałeś decyzji do pojęcia<br>");
     }
 }
 
@@ -117,6 +114,9 @@ export function processGameData(data, where) {
         window.location.href = data.state;
         return 0;
     } else {
+        clearContent("errorInfo");
+        clearContent("infoBox");
+
         updateRound(data.roundData);
         updateCommonCards(data.commonCards);
         updatePlayerCards(data.playerCards);
@@ -124,3 +124,38 @@ export function processGameData(data, where) {
         return 1;
     }
 }
+
+function clearContent(id) {
+    const box = document.getElementById(id);
+    if (box == null) {
+        return;
+    }
+
+    while (box.children.length > 0) {
+        box.removeChild(box.firstChild);
+    }
+}
+
+function addMessage(id, content) {
+    const box = document.getElementById(id);
+
+    if (box == null) {
+        return;
+    }
+
+    const p = document.createElement("p");
+    p.innerHTML = content;
+    box.append(p);
+
+    while (box.children.length > 5) {
+        box.removeChild(box.firstChild);
+    }
+}
+
+socket.on("error", (data) => {
+    addMessage("errorInfo", data.content);
+})
+
+socket.on("info", (data) => {
+    addMessage("infoBox", data.content);
+})
