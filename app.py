@@ -12,15 +12,17 @@ from flask import (
     jsonify,
     session,
 )
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
 import random
 
 app = Flask(__name__)
 app.secret_key = "tajny klucz"
 game = Game()
+socketio = SocketIO(app)
 
 from routes import *
-from socketEvents import *
+from handlers import *
+#from socketEvents import *
 
 if __name__ == "__main__":
     app.run(debug=True)
