@@ -4,6 +4,7 @@ from table import Table
 from player import Player
 
 from result import Result
+from log import Log
 
 import random
 
@@ -11,6 +12,7 @@ class Game:
     def __init__(self):
         self.players = []
         self.tables = []
+        self.event_queue = []
         self.token_to_player = dict()
         self.sid_to_player = dict()
         self.pack = Pack()
@@ -48,6 +50,7 @@ class Game:
         self.tables.append(Table(self.pack, 5))
         self.whose_round_is = 0
         self.round_num = 0
+        self.event_queue.append(Log.create("Rozgrywka się rozpoczęła"))
 
     def is_end(self):
         return self.round_num == 10
@@ -57,6 +60,11 @@ class Game:
         for table in self.tables:
             table.show_cards(5)
         self.whose_round_is = -2
+
+        self.event_queue.append(Log.create("Rozgrywka się skończyła"))
+
+        for log in self.event_queue:
+            print(log.display_time, log.timestamp, log.message)
 
     def next_round(self):
         self.whose_round_is = 0
@@ -79,7 +87,10 @@ class Game:
         if not call_needed and self.round_num % 2 == 0:
             self.last_round_skipped = True
             self.round_num += 1
+            self.event_queue.append(Log.create("Runda nr. " + str(self.round_num) + " została pominięta"))
+
         self.round_num += 1
+        self.event_queue.append(Log.create("Rozgrywka przechodzi w rundę nr. " + str(self.round_num)))
 
         # 0 Wchodzenie i podbijanie wejściowego zakładu
         # 1 Wyrównywanie do zakładu wejścia
@@ -122,6 +133,7 @@ class Game:
 
             if player.can_skip_round(self):
                 player.last_round_skipped = True
+                self.event_queue.append(Log.create("Kolejka gracza " + player.nickname + " została pominięta"))
             else:
                 break
   
@@ -129,6 +141,7 @@ class Game:
         player = self.players[self.sid_to_player[sid]]
 
         if player.can_check(self):
+            self.event_queue.append(Log.create("Gracz " + player.nickname + " czeka"))
             return self.next_player()
         else:
             return 2
@@ -142,6 +155,7 @@ class Game:
 
             self.pot += amount
             self.bet = amount
+            self.event_queue.append(Log.create("Gracz " + player.nickname + " założył się o " + str(amount)))
             return self.next_player()
         else:
             return 2
@@ -155,6 +169,7 @@ class Game:
             player.bet += cost
 
             self.pot += cost
+            self.event_queue.append(Log.create("Gracz " + player.nickname + " sprawdza"))
             return self.next_player()
         else:
             return 2
@@ -169,6 +184,7 @@ class Game:
 
             self.pot += amount + cost
             self.bet += amount
+            self.event_queue.append(Log.create("Gracz " + player.nickname + " podbił zakład o " + str(amount)))
             return self.next_player()
         else:
             return 2
@@ -180,6 +196,7 @@ class Game:
             player.fold = True
             if len(self.active_players()) <= 1:
                 return self.end()
+            self.event_queue.append(Log.create("Gracz " + player.nickname + " pasuje"))
             return self.next_player()
         else:
             return 2
@@ -196,6 +213,7 @@ class Game:
 
             self.pot += amount
             self.bet += amount - cost
+            self.event_queue.append(Log.create("Gracz " + player.nickname + " idzie all-in"))
             return self.next_player()
         else:
             return 2
@@ -206,6 +224,7 @@ class Game:
         self.bet = 1
         self.last_round_skipped = False
         self.pack = Pack()
+        self.event_queue = []
 
         for player in self.players:
             player.bet = 0
