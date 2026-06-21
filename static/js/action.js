@@ -18,6 +18,11 @@ function initActions() {
 }
 
 socket.on("gameData", (data) => {
+  const roundInfo = document.getElementById("roundInfo");
+  if (roundInfo != null) {
+    roundInfo.innerHTML = "Twoja kolej (trwa runda nr. " + data.roundData.roundNum + ")";
+  }
+
   if (processGameData(data, window.location.pathname) == 1) {
     updateButtons(data.buttons);
   }

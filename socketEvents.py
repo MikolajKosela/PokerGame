@@ -146,7 +146,7 @@ def send_data(sid):
         "playersNum": players_num,
         "pot": pot, 
         "bet": bet,
-        "round_num": round_num,
+        "roundNum": round_num,
         "yourBet": your_bet,
         "yourCredits": your_credits,
         "lastRoundSkipped": game.last_round_skipped,

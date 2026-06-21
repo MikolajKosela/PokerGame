@@ -1,9 +1,4 @@
 function updateRound(data) {
-    const curNick = document.getElementById("curNick");
-    if (curNick != null) {
-        curNick.innerHTML = "Trwa runda gracza: " + data.curNick;
-    }
-
     const pot = document.getElementById("pot");
     if (pot != null) {
         pot.innerHTML = "Całkowita pula wynosi: " + data.pot;
@@ -24,10 +19,10 @@ function updateRound(data) {
     if (infoBox != null) {
         infoBox.innerHTML = '';
         if (data.lastRoundSkipped == true) {
-            infoBox.innerHTML = "Osatnia kolejka została pominięta, <br>ponieważ żaden z graczy nie miał decyzji do podjęcia<br>";
+            infoBox.innerHTML = "Poprzednia runda została pominięta, <br>ponieważ żaden z graczy nie miał decyzji do podjęcia<br>";
         }
         if (data.yourRoundSkipped == true) {
-            infoBox.innerHTML += "Twoja kolejka została pominięta, <br>poniważ nie miałeś decyzji do pojęcia"
+            infoBox.innerHTML += "Twoja kolejka została pominięta, <br>poniważ nie miałeś decyzji do pojęcia<br>"
         }
     }
 }

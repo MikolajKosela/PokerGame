@@ -11,11 +11,10 @@
     <title>Poker online</title>
   </head>
   <body>
-    <h1>Czekaj</h1>
-    <h2 id="infoBox" class="info"></h2>
+    <h1 id="roundInfo">Poczekaj (trwa runda nr. ...)</h1>
 
     <h2>Wspólne karty</h2>
-    <h2 id="curNick">Trwa runda gracza ...</h3>
+    <h2 id="curNick">Akcję wykonuje gracz: ...</h3>
     <ul id="commonCards" class="cards"></ul>
 
     <h2>Twoje karty</h2>
@@ -28,6 +27,7 @@
     <ul id="players"></ul>
 
     <h3 id="errorInfo" class="err"></h3>
+    <h2 id="infoBox" class="info"></h2>
 
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="/static/js/socket.js"></script>
