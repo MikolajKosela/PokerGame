@@ -41,6 +41,7 @@ class Game:
         self.pack.shuffle_cards()
         for _ in self.players:
             self.tables.append(Table(self.pack, 2))
+
         self.tables.append(Table(self.pack, 5))
         self.whose_round_is = 0
         self.round_num = 0
@@ -191,6 +192,7 @@ class Game:
         self.round_num = 0
         self.tables = []
         self.bet = 1
+        self.last_round_skipped = False
         self.pack = Pack()
 
         for player in self.players:
