@@ -2,6 +2,9 @@ from card import Card
 from pack import Pack
 from table import Table
 from player import Player
+
+from result import Result
+
 import random
 
 class Game:
@@ -18,15 +21,15 @@ class Game:
         self.last_round_skipped = False
 
     def append_player(self, nickname, credits, sid):
-        # return codes: 
-        # 2 -> invalid character in nick 
-        # 3 -> a player with this nick exists
-        if len(nickname) == 0 or not all(char.isalnum() or char == "_" for char in nickname):
-            return 2
+        if len(nickname) == 0 :
+            return Result(False, "Invalid data", "Nick nie moży być pusty")
+        elif not all(char.isalnum() or char == "_" for char in nickname):
+            return Result(False,  "Invalid data", "Nick może składać się z tylko z znaków a-z, 0-9, _")
         elif any(player.nickname == nickname for player in self.players):
-            return 3
+            return Result(False, "Invalid query", "Gracz o takim nicku istnieje")
         else :
             self.players.append(Player(nickname, credits, self.players_num(), sid))
+            return Result(True)
 
     def players_num(self):
         return len(self.players) 

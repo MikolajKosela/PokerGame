@@ -2,6 +2,7 @@ from card import Card
 from pack import Pack
 from table import Table
 from player import Player
+from result import Result
 from game import Game
 
 from flask import request
@@ -23,14 +24,12 @@ def join(data):
         nickname = data["nickname"]
         return_code = game.append_player(nickname, 100, request.sid)
 
-        if return_code == 2:
-            send_error_message("Nick musi mieć długość co najmniej 1 oraz może składać się wyłącznie z znaków a-z, 0-9, _", request.sid)
-        elif return_code == 3:
-            send_error_message("Gracz o takim nicku już istnieje", request.sid)
-        else : 
+        if return_code.ok == True:
             socketio.emit("joined", {"token": grant_token()}, to=request.sid)
             socketio.emit("startData", {"players_num": game.players_num(), "started": game.started()})
             refresh_data()
+        else:
+            send_error_message(return_code.info, request.sid)
     else:
         send_error_message("Nie możesz dołączyć w trakcie trwającej rozgrywki", request.sid)
 
