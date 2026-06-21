@@ -132,6 +132,29 @@ input[type="number"] {
   color: #950606
 }
 
+.info {
+  color: #111184
+}
+
+.cards {
+    list-style: none;
+    padding: 0;
+}
+
+.cards li {
+    display: inline-block;
+    width: 60px;
+    height: 90px;
+
+    font-size: 2rem;
+
+    border: 1px solid black;
+    border-radius: 8px;
+
+    text-align: center;
+    line-height: 90px;
+}
+
 /*
 .cont .btn:hover,
 .cont .numInput:hover {
