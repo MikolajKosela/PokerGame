@@ -143,7 +143,7 @@ input[type="number"] {
 
 .cards li {
     display: inline-block;
-    width: 60px;
+    width: 65px;
     height: 90px;
 
     font-size: 2rem;
