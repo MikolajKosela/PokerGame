@@ -152,7 +152,7 @@ class Game:
     def can_i_allin(self, sid):
         pdata = self.players[self.sid_to_player[sid]]
 
-        if not pdata.allin and pdata.credits > 0 and (self.round_num % 2 == 0 or self.bet > pdata.bet):
+        if not pdata.allin and pdata.credits > 0 and (self.round_num % 2 == 0 or self.bet > pdata.bet + pdata.credits):
             return 1
         return 0
 
