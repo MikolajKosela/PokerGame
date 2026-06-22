@@ -109,11 +109,12 @@ def allin():
 @socketio.on("winners")
 def winners(data):
     winnersNum = len(data)
-    for player in data:
-        id = int(player)
-        game.players[id].credits += game.pot // winnersNum
+    if winnersNum != 0:
+        for player in data:
+            id = int(player)
+            game.players[id].credits += game.pot // winnersNum
     
-    game.pot %= winnersNum
+        game.pot %= winnersNum
     socketio.emit("creditsGranted")
     refresh_data()
 

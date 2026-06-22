@@ -230,7 +230,7 @@ class Game:
             return 2
 
     def again(self):
-        self.round_num = 0
+        self.round_num = -1
         self.tables = []
         self.bet = 1
         self.last_round_skipped = False

@@ -31,7 +31,8 @@ def summary():
     
     sumarry_data = {
         "players": players,
-        "history": history
+        "history": history,
+        "gamePot": game.pot,
     }
     socketio.emit("summary", sumarry_data)
 

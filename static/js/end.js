@@ -51,7 +51,7 @@ socket.on("summary", (data) => {
     drawCards(player.cards, list);
 
     div.appendChild(list);
-    if (AmIadmin == true && !player.fold) {
+    if (AmIadmin == true && !player.fold && data.gamePot > 0) {
       players.set(player.id, {selected: false});
 
       const button = document.createElement("button");
@@ -110,6 +110,17 @@ socket.on("creditsGranted", () => {
     const button = document.getElementById("send");
     button.innerHTML = "Nowe rozdanie";
     button.addEventListener("click", () => newDeal());
+
+    console.log("USUWAM PRZYCISKI");
+    console.log(players);
+    for (const [id, _] of players) {
+      const pbutton = document.getElementById("Button" + id);
+      console.log(pbutton);
+      console.log(id);
+      if (pbutton != null) {
+        pbutton.className = "hidden";
+      }
+    }
   }
 })
 
