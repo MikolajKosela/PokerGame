@@ -8,8 +8,25 @@ socket.on("gameData", (data) => {
 
 const players = new Map();
 
+function displayHistory(data) {
+  const div = document.getElementById("history");
+  if (div == null) {
+    return;
+  }
+  while (div.children.length > 0) {
+    div.removeChild(div.lastChild);
+  }
+
+  for (const log of data) {
+    const p = document.createElement("p");
+    p.innerHTML = log.message;
+    div.append(p);
+  }
+}
+
 socket.on("summary", (data) => {
   console.log("Podsumowanie");
+  console.log(data);
 
   let AmIadmin = false;
   if (localStorage.getItem("admin") == "true") {
@@ -23,7 +40,7 @@ socket.on("summary", (data) => {
 
   container.innerHTML = '';
 
-  for(const player of data) {
+  for(const player of data.players) {
     console.log(player);
     const div = document.createElement("div");
     div.innerHTML = `<h3>${player.nickname} - ${player.credits}</h3>`;
@@ -59,6 +76,8 @@ socket.on("summary", (data) => {
     const button = document.getElementById("send");
     button.addEventListener("click", () => sendWinners());
   }
+
+  displayHistory(data.history);
 })
 
 function choose(id) {

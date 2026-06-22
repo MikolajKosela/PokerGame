@@ -11,9 +11,15 @@ def summary():
     if game.is_end() == False:
         return False
     sumarry_data = []
+
+    history = []
+    for log in game.history:
+        history.append({"message": log.display_time + " - " + log.message})
+
+    players = []
     for i, player in enumerate(game.players):
         cards = [card.to_dict() for card in game.tables[i].cards]
-        sumarry_data.append(
+        players.append(
             {
                 "nickname": player.nickname,
                 "id": player.ID,
@@ -22,6 +28,11 @@ def summary():
                 "cards": cards,
             }
         )
+    
+    sumarry_data = {
+        "players": players,
+        "history": history
+    }
     socketio.emit("summary", sumarry_data)
 
 def check_state(sid):
