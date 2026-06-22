@@ -33,7 +33,7 @@ class Player:
             not self.allin 
             and game.round_num % 2 == 0
             and game.bet > 0
-            and self.credits > self.bet
+            and self.credits > self.bet + game.bet
         )
     
     def can_fold(self, game):

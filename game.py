@@ -177,6 +177,7 @@ class Game:
     def raiseBet(self, sid, amount):
         player = self.players[self.sid_to_player[sid]]
         cost = self.bet - player.bet
+        amount -= self.bet
 
         if player.can_raise(self) and amount > 0 and player.credits >= cost + amount:
             player.credits -= amount + cost

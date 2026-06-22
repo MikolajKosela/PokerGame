@@ -64,16 +64,14 @@ function wait(data) {
 
 socket.on("gameData", (data) => {
     console.log("MAM dane", data);
-    if (data.roundData != null) {
-      gameState.gameBet = data.roundData.bet;
-    }
 
     if (processGameData(data, window.location.pathname) == 1) {  
         if (data.roundData.yourRound == true) {
             console.log("AKCJA");
-            gameState.callCost = gameState.gameBet;
+            gameState.gameBet = data.roundData.bet;
+            gameState.callCost = data.roundData.bet
             gameState.betCost = 1;
-            gameState.raiseCost = gameState.gameBet + 1;
+            gameState.raiseCost =  data.roundData.bet + 1;
 
             action(data);
         } else {

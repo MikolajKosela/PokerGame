@@ -10,7 +10,7 @@ function updateRound(data) {
     const credits = document.getElementById("credits");
     if (credits != null) {
         credits.innerHTML =
-         "Twoje żetony " + data.yourCredits + " Do wyrównania: " + data.bet;
+         "Twoje żetony " + data.credits + " Do wyrównania: " + data.bet;
     }
 
     const callBut = document.getElementById("call");

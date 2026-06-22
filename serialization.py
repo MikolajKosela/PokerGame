@@ -83,10 +83,9 @@ def build_round_data(sid):
         "curNick": game.players[game.whose_round_is].nickname,
         "playersNum": game.players_num(),
         "pot": game.pot, 
-        "bet": game.bet,
+        "bet": game.bet - player.bet,
         "roundNum": game.round_num,
-        "yourBet": player.bet,
-        "yourCredits": player.credits,
+        "credits": player.credits,
         "lastRoundSkipped": game.last_round_skipped,
         "yourRoundSkipped": player.last_round_skipped
     }
