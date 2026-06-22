@@ -1,4 +1,7 @@
 function updateRound(data) {
+    if (data == null) {
+        return;
+    }
     const pot = document.getElementById("pot");
     if (pot != null) {
         pot.innerHTML = "Całkowita pula wynosi: " + data.pot;
@@ -109,12 +112,14 @@ export function checkState(data, where) {
 }
 
 export function processGameData(data, where) {
-    console.log(data);
+
+    console.log("data", data);
     if (checkState(data, where) == 0) {
         window.location.href = data.state;
         return 0;
     } else {
         clearContent("infoBox");
+
         updateRound(data.roundData);
         updateCommonCards(data.commonCards);
         updatePlayerCards(data.playerCards);

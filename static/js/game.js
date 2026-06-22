@@ -63,8 +63,10 @@ function wait(data) {
 }
 
 socket.on("gameData", (data) => {
-    console.log("MAM dane");
-    gameState.gameBet = data.roundData.bet;
+    console.log("MAM dane", data);
+    if (data.roundData != null) {
+      gameState.gameBet = data.roundData.bet;
+    }
 
     if (processGameData(data, window.location.pathname) == 1) {  
         if (data.roundData.yourRound == true) {
@@ -162,6 +164,10 @@ function updateBut(target) {
 }
 
 function updateButtons(data) {
+  if (data == null) {
+    return;
+  }
+
   console.log(data);
 
   if (data.check == true) {

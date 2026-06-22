@@ -48,18 +48,19 @@ def check_state(sid):
     print("Dostałem zapytanie od", cur_ID, nickname, "wysyłam", state)
     return state
 
-def build_possible_moves(sid):
+def build_buttons(sid):
     player = game.players[game.sid_to_player[sid]]
 
-    possibilities = {
+    buttons = {
         "check": player.can_check(game),
         "bet": player.can_bet(game),
         "call": player.can_call(game),
         "raise": player.can_raise(game),
         "fold": player.can_fold(game),
         "allin": player.can_allin(game),
-    }
-    return possibilities
+    } 
+
+    return buttons 
 
 def build_game_logs():
     logs = []
@@ -74,77 +75,56 @@ def send_logs():
         game.event_queue = []
         socketio.emit("logs", logs)
 
+def build_round_data(sid):
+    player = game.players[game.sid_to_player[sid]]
+
+    round_data = {
+        "yourRound": player.ID == game.whose_round_is,
+        "curNick": game.players[game.whose_round_is].nickname,
+        "playersNum": game.players_num(),
+        "pot": game.pot, 
+        "bet": game.bet,
+        "roundNum": game.round_num,
+        "yourBet": player.bet,
+        "yourCredits": player.credits,
+        "lastRoundSkipped": game.last_round_skipped,
+        "yourRoundSkipped": player.last_round_skipped
+    }
+    
+    return round_data
+    
+def build_common_cards():
+    return game.tables[-1].to_dict()
+
+def build_player_cards(sid):
+    player = game.players[game.sid_to_player[sid]]
+    return game.tables[player.ID].to_dict()
+
+def build_players_list():
+    return [player.to_dict() for player in game.players]
+
 def send_data(sid):
     print("Wysyłam dane do gracza: ", sid)
-    state = "/"
-    my_ID = None
-    my_data = None
-    your_round = None
-    cur_nick = None
-    players_num = None
-    pot = None 
-    bet = None 
-    round_num = None
-    your_bet = None
-    your_credits = None 
-    your_round_skipped = None
-
+    state = "/" 
     common_cards = None 
     player_cards = None
     round_data = None 
-    players = None 
+    players = build_players_list() 
     buttons = None 
 
     if game.sid_to_player.get(sid) != None:
-        my_ID = game.sid_to_player[sid]
         state = check_state(sid)
-        print(" ID GRACZA ", my_ID, game.players[my_ID].nickname)
 
-    players_num = game.players_num()
-    players = [player.to_dict() for player in game.players]
+        player = game.players[game.sid_to_player[sid]]
+        if game.whose_round_is == player.ID:
+            buttons = build_buttons(sid)
 
-    if (game.whose_round_is >= 0 or game.is_end()) and my_ID != None:
-        my_data = game.players[my_ID]
-        common_cards = game.tables[-1].to_dict()
-        player_cards = game.tables[my_ID].to_dict()
+    if game.started():
+        common_cards = build_common_cards()
+        player_cards = build_player_cards(sid)
+        round_data = build_round_data(sid)
 
-        if game.whose_round_is >= 0:    
-            cur_nick = game.players[game.whose_round_is].nickname
-        your_round = my_ID == game.whose_round_is
 
-        pot = game.pot
-        bet = game.bet - my_data.bet
-
-        round_num = game.round_num
-        your_bet = my_data.bet
-        your_credits = my_data.credits
-        your_round_skipped = my_data.last_round_skipped
-
-        if your_round == True:
-            buttons = build_possible_moves(sid)
-        else:
-            buttons = {
-                "check": False,
-                "bet": False,
-                "call": False,
-                "raise": False,
-                "fold": False,
-                "allin": False,
-            }
-
-    round_data = {
-        "yourRound": your_round,
-        "curNick": cur_nick,
-        "playersNum": players_num,
-        "pot": pot, 
-        "bet": bet,
-        "roundNum": round_num,
-        "yourBet": your_bet,
-        "yourCredits": your_credits,
-        "lastRoundSkipped": game.last_round_skipped,
-        "yourRoundSkipped": your_round_skipped
-    }
-    
     data = {
         #"sid": sid,
         "state": state,
