@@ -65,7 +65,7 @@ class Game:
 
         for log in self.event_queue:
             print(log.display_time, log.timestamp, log.message)
-
+        
     def next_round(self):
         self.whose_round_is = 0
         self.last_round_skipped = False
@@ -123,10 +123,12 @@ class Game:
             return self.end()
 
     def next_player(self):
-        while True:
+        while not self.is_end():
             self.whose_round_is += 1
             if self.whose_round_is >= self.players_num():
-                return self.next_round()
+                self.next_round()
+                self.whose_round_is -= 1
+                continue
 
             player = self.players[self.whose_round_is]
             player.last_round_skipped = False

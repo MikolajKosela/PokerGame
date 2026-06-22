@@ -78,9 +78,13 @@ def send_logs():
 def build_round_data(sid):
     player = game.players[game.sid_to_player[sid]]
 
+    cur_nick = None
+    if game.whose_round_is >= 0:
+        cur_nick = game.players[game.whose_round_is].nickname,
+
     round_data = {
         "yourRound": player.ID == game.whose_round_is,
-        "curNick": game.players[game.whose_round_is].nickname,
+        "curNick": cur_nick,
         "playersNum": game.players_num(),
         "pot": game.pot, 
         "bet": game.bet - player.bet,

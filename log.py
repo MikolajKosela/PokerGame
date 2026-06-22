@@ -13,5 +13,5 @@ class Log:
         return Log(
             message=message,
             timestamp=now.timestamp(),
-            display_time=now.strftime("%H:%M")
+            display_time=now.strftime("%H:%M:%S")
         )
