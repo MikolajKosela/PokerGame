@@ -1,6 +1,12 @@
 import { processGameData } from "./common.js";
 
 initActions();
+const gameState = {
+  gameBet: 0,
+  callCost: 0,
+  betCost: 0,
+  raiseCost: 0,
+}
 
 function initActions() {
   document.getElementById("check").addEventListener("click", check);
@@ -10,11 +16,14 @@ function initActions() {
   document.getElementById("raise").addEventListener("click", raise);
   document.getElementById("allin").addEventListener("click", allin);
 
-  document.getElementById("betMinus").addEventListener("click", () => changeValue("betValue", -1));
-  document.getElementById("betPlus").addEventListener("click", () => changeValue("betValue", 1));
+  document.getElementById("betMinus").addEventListener("click", () => changeValue("bet", -1));
+  document.getElementById("betPlus").addEventListener("click", () => changeValue("bet", 1));
 
-  document.getElementById("raiseMinus").addEventListener("click", () => changeValue("raiseValue", -1));
-  document.getElementById("raisePlus").addEventListener("click", () => changeValue("raiseValue", 1));
+  document.getElementById("raiseMinus").addEventListener("click", () => changeValue("raise", -1));
+  document.getElementById("raisePlus").addEventListener("click", () => changeValue("raise", 1));
+
+  document.getElementById("betValue").addEventListener("input", () => updateBut("bet"));
+  document.getElementById("raiseValue").addEventListener("input", () => updateBut("raise"));
 }
 
 function action(data) {
@@ -55,9 +64,15 @@ function wait(data) {
 
 socket.on("gameData", (data) => {
     console.log("MAM dane");
+    gameState.gameBet = data.roundData.bet;
+
     if (processGameData(data, window.location.pathname) == 1) {  
         if (data.roundData.yourRound == true) {
             console.log("AKCJA");
+            gameState.callCost = gameState.gameBet;
+            gameState.betCost = 1;
+            gameState.raiseCost = gameState.gameBet + 1;
+
             action(data);
         } else {
             console.log("CZEKAJ");
@@ -66,16 +81,26 @@ socket.on("gameData", (data) => {
     }
 })
 
-function changeValue(where, howMuch) {
-  console.log(where, howMuch);
+function changeValue(target, howMuch) {
+  console.log(target, howMuch);
 
-  const target = document.getElementById(where);
-  let value = parseInt(target.value) || 1;
+  const input = document.getElementById(target + "Value");
+  let value = parseInt(input.value) || 1;
   value += howMuch;
-  if (value < parseInt(target.min)) {
-    value = parseInt(target.min);
+
+  if (value < parseInt(input.min)) {
+    value = parseInt(input.min);
   }
-  target.value = value;
+  input.value = value;
+
+  gameState[target + "Cost"] = gameState.gameBet + value;
+  const amount = document.getElementById(target + "Amount");
+  if (amount != null) {
+    amount.innerHTML = gameState[target + "Cost"];
+  }
+
+  console.log("asdklajfkjdfklajd");
+  console.log(gameState);
 }
 
 function check() {
@@ -84,9 +109,9 @@ function check() {
 }
 
 function bet() {
-  const amount = document.getElementById("betValue");
-  console.log("bet: ", amount.value);
-  socket.emit("bet", {amount: amount.value});
+  const amount = gameState.betCost;
+  console.log("bet: ", amount);
+  socket.emit("bet", {amount: amount});
 }
 
 function call() {
@@ -95,9 +120,10 @@ function call() {
 }
 
 function raise() {
-  const amount = document.getElementById("raiseValue");
-  console.log("raise: ", amount.value);
-  socket.emit("raise", {amount: amount.value});
+  const amount = gameState.raiseCost;
+  document.getElementById("raiseValue");
+  console.log("raise: ", amount);
+  socket.emit("raise", {amount: amount});
 }
 
 function fold() {
@@ -111,21 +137,27 @@ function allin() {
 }
 
 function updateBut(target) {
-  const actions = {
-    check: check,
-    bet: bet,
-    call: call,
-    fold: fold,
-    raise: raise,
-    allin: allin
-  };
-
+  console.log("dafkjakldfjafl", target);
   if (target == "bet" || target == "raise") {
     const contener = document.getElementById(target + "Cont");
     contener.className = "cont";
   } else {
     const buttton = document.getElementById(target);
     buttton.className = "btn";
+  }
+
+  const input = document.getElementById(target + "Value");
+  const amount = document.getElementById(target + "Amount");
+
+  if (input != null && amount != null) {
+    let value = parseInt(input.value) || 1;
+    console.log(value);
+
+    gameState[target + "Cost"] = gameState.gameBet + value;
+    if (amount != null) {
+      amount.innerHTML = gameState[target + "Cost"];
+    }
+
   }
 }
 
