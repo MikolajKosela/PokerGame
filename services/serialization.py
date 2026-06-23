@@ -23,8 +23,8 @@ def summary():
                 "id": player.ID,
                 "fold": player.fold,
                 "credits": player.credits,
-                "cards": cards if not player.fold else None,
-                "result": player.result if not player.fold else None,
+                "cards": cards,
+                "result": player.result,
             }
         )
     
