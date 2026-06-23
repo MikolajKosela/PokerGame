@@ -18,7 +18,9 @@ def summary():
 
     players = []
     for i, player in enumerate(game.players):
-        cards = [card.to_dict() for card in game.tables[i].cards]
+        cards = []
+        if not player.fold:
+            cards = [card.to_dict() for card in game.tables[i].cards]
         players.append(
             {
                 "nickname": player.nickname,
