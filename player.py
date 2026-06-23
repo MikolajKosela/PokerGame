@@ -8,6 +8,7 @@ class Player:
         self.allin = False
         self.fold = False
         self.last_round_skipped = False
+        self.result = None
     
     def can_check(self, game):
         return (self.allin or self.bet == game.bet)

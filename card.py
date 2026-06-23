@@ -44,9 +44,21 @@ class Card:
 
     def __str__(self):
         if self.visibility:
-            return f"{self.color} {self.rank}"
+            symbol = None
+            match self.color:
+                case "Pik":
+                    symbol = "♠"
+                case "Kier":
+                    symbol = "♥"
+                case "Karo":
+                    symbol = "♦"
+                case "Trefl":
+                    symbol = "♣"
+                case _:
+                    symbol = self.color
+            return symbol + self.rank
         else:
-            return f"???"
+            return "???"
 
     def to_dict(self):
         return {

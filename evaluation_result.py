@@ -27,3 +27,9 @@ class Evaluation_result:
             "comment": self.comment,
             "cards": self.cards
         }
+    
+    def __str__(self):
+        result = self.comment + " -> "
+        for card in self.cards:
+            result += str(card) + ", "
+        return result

@@ -51,6 +51,13 @@ socket.on("summary", (data) => {
     drawCards(player.cards, list);
 
     div.appendChild(list);
+  
+    if(player.result != null) {
+      const result = document.createElement("h3");
+      result.innerHTML = player.result;
+      div.appendChild(result);
+    }
+
     if (AmIadmin == true && !player.fold && data.gamePot > 0) {
       players.set(player.id, {selected: false});
 

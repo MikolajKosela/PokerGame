@@ -5,6 +5,7 @@ from player import Player
 
 from result import Result
 from log import Log
+from hand_evaluator import evaluate_hand, print_result
 
 import random
 
@@ -69,6 +70,9 @@ class Game:
         self.whose_round_is = -2
 
         self.create_log("Rozgrywka się skończyła")
+        for player in self.players:
+            result = evaluate_hand(self.tables[player.ID].cards + self.tables[-1].cards)
+            player.result = str(result)
 
         for log in self.event_queue:
             print(log.display_time, log.timestamp, log.message)
