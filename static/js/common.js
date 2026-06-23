@@ -63,7 +63,7 @@ export function drawCards(cards, list) {
                     color = "undefinded";
             }
 
-            li.innerHTML = `<span style="color: ${color};">${symbol}</span> ${card.number}`;
+            li.innerHTML = `<span style="color: ${color};">${symbol}</span> ${card.rank}`;
         } else {
             li.innerHTML = "???";
         }
