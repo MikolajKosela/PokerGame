@@ -1,6 +1,4 @@
-from pack import Pack
-from card import Card
-
+from models import Card, Pack
 
 class Table:
     def __init__(self, pack, num):

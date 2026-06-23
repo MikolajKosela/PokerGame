@@ -1,7 +1,4 @@
-from card import Card
-from evaluation_result import Evaluation_result
-
-import copy
+from models import Card, Evaluation_result
 
 '''
 Układy kart
@@ -33,9 +30,7 @@ def value_to_rank(value):
             return str(value)
 
 def is_high_card(cards):
-    print("Wysoka karta")
-    print(list(reversed(cards)))
-    return Evaluation_result(1, "Wysoka karta", list(reversed(cards))[:5])
+    return Evaluation_result(1, "Wysoka karta " + cards[-1].rank, list(reversed(cards))[:5])
 
 def best_kind(kind, candidate, max_num=5):
     if candidate[0] > max_num:
@@ -188,7 +183,7 @@ def is_straight_flush(cards, color):
 
 def evaluate_hand(cards):
     cards.sort()
-    result = Evaluation_result(1, "Wysoka karta " + cards[0].rank, list(reversed(cards))[:5])
+    result = is_high_card(cards)
 
     result = max(result, how_many_of_kinds(cards))
 
@@ -202,9 +197,7 @@ def evaluate_hand(cards):
 
     return result
 
-
 def print_result(result):
-    print()
     if result.power == 0:
         print("Siła 0")
     else:
@@ -213,20 +206,3 @@ def print_result(result):
         print()
         for card in result.cards:
             print(card)
-    print()
-    print()
-
-def test():
-    a = Card("Pik", "4")
-    b = Card("Pik", "5")
-    c = Card("Pik", "10")
-    d = Card("Pik", "J")
-    e = Card("Pik", "Q")
-    f = Card("Pik", "K")
-    g = Card("Pik", "A")
-    cards = [a, b, c, d, e, f, g]
-
-
-    print_result(evaluate_hand(cards))
-    
-    

@@ -1,17 +1,13 @@
-from card import Card
-from pack import Pack
-from table import Table
-from player import Player
-from result import Result
+from models import Card, Pack, Table, Player, Result
 from game import Game
 
 from flask import request
 from flask_socketio import emit
 from app import app, game, socketio 
 
-from auth import grant_token, check_token 
-from serialization import send_data
-from utils import refresh_data, send_error_message, send_info_message, send_message_to_everyone
+from services.auth import grant_token, check_token 
+from services.serialization import send_data
+from utils.utils import refresh_data, send_error_message, send_info_message, send_message_to_everyone
 
 
 @socketio.on("startDataRequest")

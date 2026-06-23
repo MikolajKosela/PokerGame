@@ -1,28 +1,14 @@
-from card import Card
-from pack import Pack
-from table import Table
-from player import Player
 from game import Game
-from flask import (
-    Flask,
-    request,
-    render_template,
-    url_for,
-    redirect,
-    jsonify,
-    session,
-)
+
+from flask import Flask
 from flask_socketio import SocketIO
-import random
 
 app = Flask(__name__)
-app.secret_key = "tajny klucz"
 game = Game()
 socketio = SocketIO(app)
 
-from routes import *
-from handlers import *
-#from socketEvents import *
+from routes.routes import *
+from handlers.handlers import *
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, debug=True)

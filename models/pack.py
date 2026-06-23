@@ -1,4 +1,4 @@
-from card import Card
+from models import Card
 import random
 
 class Pack:

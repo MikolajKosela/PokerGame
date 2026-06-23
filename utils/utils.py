@@ -1,13 +1,10 @@
-from card import Card
-from pack import Pack
-from table import Table
-from player import Player
+from models import Card, Pack, Table, Player
 from game import Game
 
 from flask_socketio import emit
 from app import app, game, socketio 
 
-from serialization import send_data, send_logs
+from services.serialization import send_data, send_logs
 
 def refresh_data():
     print("  Wyświetlam graczy, którym odświeżam dane")

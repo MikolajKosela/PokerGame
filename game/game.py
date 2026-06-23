@@ -1,11 +1,5 @@
-from card import Card
-from pack import Pack
-from table import Table
-from player import Player
-
-from result import Result
-from log import Log
-from hand_evaluator import evaluate_hand, print_result
+from models import Card, Pack, Table, Player, Result, Log
+from .hand_evaluator import evaluate_hand, print_result
 
 import random
 

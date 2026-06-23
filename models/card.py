@@ -56,7 +56,7 @@ class Card:
                     symbol = "♣"
                 case _:
                     symbol = self.color
-            return symbol + self.rank
+            return symbol + " " + self.rank
         else:
             return "???"
 

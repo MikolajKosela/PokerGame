@@ -1,7 +1,4 @@
-from card import Card
-from pack import Pack
-from table import Table
-from player import Player
+from models import Card, Pack, Table, Player 
 from game import Game
 
 from flask import request
