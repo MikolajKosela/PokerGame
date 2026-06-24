@@ -15,7 +15,5 @@ socket.on("gameData", (data) => {
 });
 
 function start() {
-    if (localStorage.getItem("admin") == "true") {
-        socket.emit("startGame");
-    }
+    socket.emit("startGame");
 }

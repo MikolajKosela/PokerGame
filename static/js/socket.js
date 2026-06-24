@@ -8,10 +8,9 @@ socket.on("connect", () => {
 });
 
 socket.on("handshakeAnswer", (data) => {
+    console.log(data);
     const ok = data.ok;
     console.log("Połączono. Czy znaleziono token?:");
-
-    console.log(ok);
 
     if (ok == false) {
         localStorage.clear("token");

@@ -21,7 +21,7 @@ def handshake(data):
         game.sid_to_player[request.sid] = cur_ID
         if cur_ID >= 0:
             game.players[cur_ID].sid = request.sid
-        if cur_ID == 0:
+        if cur_ID == game.adminID:
             admin = True
 
     socketio.emit("handshakeAnswer", {"ok" : ok, "admin" : admin}, to=request.sid)

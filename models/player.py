@@ -59,6 +59,9 @@ class Player:
             and not self.can_raise(game)
             and not self.can_allin(game)
         )
+    
+    def is_admin(self, game):
+        return self.ID == game.adminID
 
     def to_dict(self):
         return {

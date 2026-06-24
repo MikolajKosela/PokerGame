@@ -18,6 +18,7 @@ class Game:
         self.round = Round.PRE_START
         self.whose_round_is = -1
         self.last_round_skipped = False
+        self.adminID = 0
 
     def create_log(self, message):
         self.event_queue.append(Log.create(message))

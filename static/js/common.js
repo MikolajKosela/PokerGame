@@ -94,10 +94,16 @@ function updatePlayers(data) {
         const li = document.createElement("li");
         console.log(player);
 
-        if (player.id == 0) {
-            li.textContent = player.nickname + " - " + player.credits + " (admin)";
-        } else {
-            li.textContent = player.nickname + " - " + player.credits;
+        li.textContent = player.nickname + " - " + player.credits;
+        console.log(player.admin);
+        if (player.admin == true) {
+            li.textContent += " (Admin)";
+        }
+        if (player.allin == true) {
+            li.textContent += " (All-in)"
+        }
+        if (player.fold == true) {
+            li.textContent += " (Spasował)"
         }
         playersList.appendChild(li);
     }

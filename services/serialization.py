@@ -22,9 +22,11 @@ def summary():
                 "nickname": player.nickname,
                 "id": player.ID,
                 "fold": player.fold,
+                "allin": player.allin,
                 "credits": player.credits,
                 "cards": cards,
                 "result": player.result,
+                "admin": player.ID == game.adminID,
             }
         )
     
@@ -115,7 +117,13 @@ def build_player_cards(sid):
     return game.tables[player.ID].to_dict()
 
 def build_players_list():
-    return [player.to_dict() for player in game.players]
+    player_list = []
+    for player in game.players:
+        p = player.to_dict()
+        p["admin"] = p["id"] == game.adminID
+        player_list.append(p)
+
+    return player_list
 
 def send_data(sid):
     print("Wysyłam dane do gracza: ", sid)

@@ -43,7 +43,19 @@ socket.on("summary", (data) => {
   for(const player of data.players) {
     console.log(player);
     const div = document.createElement("div");
-    div.innerHTML = `<h3>${player.nickname} - ${player.credits}</h3>`;
+
+    const caption = document.createElement("h3");
+    caption.innerHTML = player.nickname + " - " + player.credits;
+    if (player.admin) {
+      caption.textContent += " (Admin)";
+    }
+    if (player.allin == true) {
+      caption.textContent += " (All-in)"
+    }
+    if (player.fold == true) {
+      caption.textContent += " (Spasował)"
+    }
+    div.appendChild(caption);
 
     const list = document.createElement("ul");
     list.className = "cards";
