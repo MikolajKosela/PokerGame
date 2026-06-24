@@ -157,19 +157,19 @@ class Game:
   
     def check(self, sid):
         if not self.can_you_make_action(sid):
-            return
+            return Result(False, "Query rejected", "To nie Twoja kolej")
         
         player = self.current_player()
 
         if player.can_check(self):
             self.create_log("Gracz " + player.nickname + " czeka")
-            return self.next_player()
+            self.next_player()
         else:
-            return 2
+            return Result(False, "Permission denied", "Nie możesz wykonać tej akcji")
 
     def make_bet(self, sid, amount):
         if not self.can_you_make_action(sid):
-            return
+            return Result(False, "Query rejected", "To nie Twoja kolej")
         
         player = self.current_player()
 
@@ -180,13 +180,13 @@ class Game:
             self.pot += amount
             self.bet = amount
             self.create_log("Gracz " + player.nickname + " założył się o " + str(amount))
-            return self.next_player()
+            self.next_player()
         else:
-            return 2
+            return Result(False, "Permission denied", "Nie możesz wykonać tej akcji")
 
     def call(self, sid):
         if not self.can_you_make_action(sid):
-            return
+            return Result(False, "Query rejected", "To nie Twoja kolej")
         
         player = self.current_player()
 
@@ -198,13 +198,13 @@ class Game:
 
             self.pot += cost
             self.create_log("Gracz " + player.nickname + " sprawdza")
-            return self.next_player()
+            self.next_player()
         else:
-            return 2
+            return Result(False, "Permission denied", "Nie możesz wykonać tej akcji")
 
     def raiseBet(self, sid, amount):
         if not self.can_you_make_action(sid):
-            return
+            return Result(False, "Query rejected", "To nie Twoja kolej")
         
         player = self.current_player()
 
@@ -218,13 +218,13 @@ class Game:
             self.pot += amount + cost
             self.bet += amount
             self.create_log("Gracz " + player.nickname + " podbił zakład o " + str(amount))
-            return self.next_player()
+            self.next_player()
         else:
-            return 2
+            return Result(False, "Permission denied", "Nie możesz wykonać tej akcji")
 
     def fold(self, sid):
         if not self.can_you_make_action(sid):
-            return
+            return Result(False, "Query rejected", "To nie Twoja kolej")
         
         player = self.current_player()
 
@@ -233,13 +233,13 @@ class Game:
             if len(self.active_players()) <= 1:
                 return self.end()
             self.create_log("Gracz " + player.nickname + " pasuje")
-            return self.next_player()
+            self.next_player()
         else:
-            return 2
+            return Result(False, "Permission denied", "Nie możesz wykonać tej akcji")
 
     def allin(self, sid):
         if not self.can_you_make_action(sid):
-            return
+            return Result(False, "Query rejected", "To nie Twoja kolej")
         
         player = self.current_player()
 
@@ -254,9 +254,9 @@ class Game:
             self.pot += amount
             self.bet += amount - cost
             self.create_log("Gracz " + player.nickname + " idzie all-in")
-            return self.next_player()
+            self.next_player()
         else:
-            return 2
+            return Result(False, "Permission denied", "Nie możesz wykonać tej akcji")
 
     def again(self):
         self.round = Round.PRE_START

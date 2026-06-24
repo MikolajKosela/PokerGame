@@ -46,10 +46,12 @@ def game_data_request():
 def check():
     print("check")
     
-    if game.check(request.sid) == 2:
-        send_error_message("Serwer odmówił wykonania tej akcji", request.sid)
-    else:
+    return_code = game.check(request.sid)
+
+    if return_code == None:
         refresh_data()
+    else:
+        send_error_message(return_code.info, request.sid)
 
 @socketio.on("bet")
 def bet(data):
@@ -58,19 +60,23 @@ def bet(data):
     amount = int(amount)
     print("bet: ", amount)
 
-    if game.make_bet(request.sid, amount) == 2:
-        send_error_message("Serwer odmówił wykonania tej akcji", request.sid)
-    else:
+    return_code = game.make_bet(request.sid, amount)
+
+    if return_code == None:
         refresh_data()
+    else:
+        send_error_message(return_code.info, request.sid)
 
 @socketio.on("call")
 def call():
     print("call")
     
-    if game.call(request.sid) == 2:
-        send_error_message("Serwer odmówił wykonania tej akcji", request.sid)
-    else:
+    return_code = game.call(request.sid)
+
+    if return_code == None:
         refresh_data()
+    else:
+        send_error_message(return_code.info, request.sid)
 
 @socketio.on("raise")
 def raise_bet(data):
@@ -79,28 +85,34 @@ def raise_bet(data):
     amount = int(amount)
     print("raise: ", amount)
 
-    if game.raiseBet(request.sid, amount) == 2:
-        send_error_message("Serwer odmówił wykonania tej akcji", request.sid)
-    else:
+    return_code = game.raiseBet(request.sid, amount)
+
+    if return_code == None:
         refresh_data()
+    else:
+        send_error_message(return_code.info, request.sid)
 
 @socketio.on("fold")
 def fold():
     print("fold")
 
-    if game.fold(request.sid) == 2:
-        send_error_message("Serwer odmówił wykonania tej akcji", request.sid)
-    else:
+    return_code = game.fold(request.sid)
+
+    if return_code == None:
         refresh_data()
+    else:
+        send_error_message(return_code.info, request.sid)
 
 @socketio.on("allin")
 def allin():
     print("allin")
 
-    if game.allin(request.sid) == 2:
-        send_error_message("Serwer odmówił wykonania tej akcji", request.sid)
-    else:
+    return_code = game.allin(request.sid)
+
+    if return_code == None:
         refresh_data()
+    else:
+        send_error_message(return_code.info, request.sid)
 
 @socketio.on("winners")
 def winners(data):
