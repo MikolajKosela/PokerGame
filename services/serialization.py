@@ -45,8 +45,7 @@ def summary():
     socketio.emit("summary", sumarry_data)
 
 def check_state(sid):
-    cur_ID = game.sid_to_player[sid]
-    nickname = game.players[cur_ID].nickname
+    cur_ID = game.get_player_by_sid(sid)
 
     state = "/"
     # 0 - start
@@ -65,11 +64,11 @@ def check_state(sid):
     else:
         state="/game"
 
-    print("Dostałem zapytanie od", cur_ID, nickname, "wysyłam", state)
+    print("Dostałem zapytanie od", cur_ID, "wysyłam", state)
     return state
 
 def build_buttons(sid):
-    player = game.players[game.sid_to_player[sid]]
+    player = game.get_player_by_sid(sid)
 
     buttons = {
         "check": player.can_check(game),
@@ -96,7 +95,7 @@ def send_logs():
         socketio.emit("logs", logs)
 
 def build_round_data(sid):
-    player = game.players[game.sid_to_player[sid]]
+    player = game.get_player_by_sid(sid)
 
     cur_nick = None
     if game.whose_round_is >= 0:
@@ -120,7 +119,7 @@ def build_common_cards():
     return game.tables[-1].to_dict()
 
 def build_player_cards(sid):
-    player = game.players[game.sid_to_player[sid]]
+    player = game.get_player_by_sid(sid)
     return game.tables[player.ID].to_dict()
 
 def build_players_list():
@@ -144,7 +143,7 @@ def send_data(sid):
     if game.sid_to_player.get(sid) != None:
         state = check_state(sid)
 
-        player = game.players[game.sid_to_player[sid]]
+        player = game.get_player_by_sid(sid)
         if game.whose_round_is == player.ID:
             buttons = build_buttons(sid)
 

@@ -34,6 +34,11 @@ class Game:
         else :
             self.players.append(Player(nickname, credits, self.players_num(), sid))
             return Result(True)
+    
+    def get_player_by_sid(self, sid):
+        if sid in self.sid_to_player.keys():
+            return self.players[self.sid_to_player[sid]]
+        return None
 
     def players_num(self):
         return len(self.players) 
@@ -52,12 +57,6 @@ class Game:
             return None
         return self.players[self.whose_round_is]
 
-    def can_you_make_action(self, sid):
-        id = self.sid_to_player[sid]
-        if id == None or id != self.whose_round_is:
-            return False
-        return True
-    
     def bet_to_zero(self):
         for player in self.players:
             player.bet = 0
@@ -156,9 +155,6 @@ class Game:
                 break
   
     def check(self, sid):
-        if not self.can_you_make_action(sid):
-            return Result(False, "Query rejected", "To nie Twoja kolej")
-        
         player = self.current_player()
 
         if player.can_check(self):
@@ -168,9 +164,6 @@ class Game:
             return Result(False, "Permission denied", "Nie możesz wykonać tej akcji")
 
     def make_bet(self, sid, amount):
-        if not self.can_you_make_action(sid):
-            return Result(False, "Query rejected", "To nie Twoja kolej")
-        
         player = self.current_player()
 
         if player.can_bet(self) and amount > 0 and player.credits >= amount:
@@ -185,9 +178,6 @@ class Game:
             return Result(False, "Permission denied", "Nie możesz wykonać tej akcji")
 
     def call(self, sid):
-        if not self.can_you_make_action(sid):
-            return Result(False, "Query rejected", "To nie Twoja kolej")
-        
         player = self.current_player()
 
         cost = self.bet - player.bet
@@ -203,9 +193,6 @@ class Game:
             return Result(False, "Permission denied", "Nie możesz wykonać tej akcji")
 
     def raiseBet(self, sid, amount):
-        if not self.can_you_make_action(sid):
-            return Result(False, "Query rejected", "To nie Twoja kolej")
-        
         player = self.current_player()
 
         cost = self.bet - player.bet
@@ -223,9 +210,6 @@ class Game:
             return Result(False, "Permission denied", "Nie możesz wykonać tej akcji")
 
     def fold(self, sid):
-        if not self.can_you_make_action(sid):
-            return Result(False, "Query rejected", "To nie Twoja kolej")
-        
         player = self.current_player()
 
         if player.can_fold(self):
@@ -238,9 +222,6 @@ class Game:
             return Result(False, "Permission denied", "Nie możesz wykonać tej akcji")
 
     def allin(self, sid):
-        if not self.can_you_make_action(sid):
-            return Result(False, "Query rejected", "To nie Twoja kolej")
-        
         player = self.current_player()
 
         amount = player.credits
