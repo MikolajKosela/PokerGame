@@ -1,5 +1,6 @@
 from models import Card, Pack, Table, Player, Result, Log
 from .hand_evaluator import evaluate_hand, print_result
+from .round_state import * 
 
 import random
 
@@ -14,7 +15,7 @@ class Game:
         self.pack = Pack()
         self.pot = 0
         self.bet = 1
-        self.round_num = -1
+        self.round = Round.PRE_START
         self.whose_round_is = -1
         self.last_round_skipped = False
 
@@ -40,7 +41,15 @@ class Game:
         return [player for player in self.players if not player.fold]
 
     def started(self):
-        return self.round_num > -1
+        return game_started(self.round)
+
+    def is_end(self):
+        return self.round == Round.END
+    
+    def bet_to_zero(self):
+        for player in self.players:
+            player.bet = 0
+        self.bet = 0
 
     def start(self):
         if self.started():
@@ -51,14 +60,11 @@ class Game:
 
         self.tables.append(Table(self.pack, 5))
         self.whose_round_is = 0
-        self.round_num = 0
+        self.round = Round.PRE_FLOP_BET
         self.create_log("Rozgrywka się rozpoczęła")
 
-    def is_end(self):
-        return self.round_num == 10
-
     def end(self):
-        self.round_num = 10
+        self.round = Round.END
         for table in self.tables:
             table.show_cards(5)
         self.whose_round_is = -2
@@ -74,29 +80,21 @@ class Game:
     def next_round(self):
         self.whose_round_is = 0
         self.last_round_skipped = False
+        self.round = Round(self.round + 1) 
 
-        call_needed = False
-        if (
-            self.round_num % 2 == 0 
-            and any(player.bet < self.bet for player in self.players)
-            ):
-            call_needed = True
-
-        if not call_needed:
-            for player in self.players:
-                player.bet = 0
-            self.bet = 0
-
-        # Jeżeli wszyscy gracze wyrównali swoje zaklady, to
-        # można pominąć turę wyrównywania 
-        if not call_needed and self.round_num % 2 == 0:
+        if (is_betting_round(self.round)):
+            self.bet_to_zero()
+        
+        if is_calling_round(self.round) and all(player.bet == self.bet for player in self.active_players()):
+            self.bet_to_zero()
+            # Jeżeli wszyscy gracze wyrównali swoje zaklady, to
+            # można pominąć turę wyrównywania 
             self.last_round_skipped = True
-            self.round_num += 1
-            self.create_log("Runda nr. " + str(self.round_num) + " została pominięta")
+            self.create_log("Runda nr. " + str(self.round) + " została pominięta")
+            self.round = Round(self.round + 1) 
 
-        self.round_num += 1
-        if self.round_num < 10:
-            self.create_log("Rozgrywka przechodzi w rundę nr. " + str(self.round_num))
+        if is_game_round(self.round):
+            self.create_log("Rozgrywka przechodzi w rundę nr. " + str(self.round))
 
         # 0 Wchodzenie i podbijanie wejściowego zakładu
         # 1 Wyrównywanie do zakładu wejścia
@@ -112,20 +110,20 @@ class Game:
 
         # Odkryj karty na stosach graczy
         # (z pominięciem ostatniego [:-1], wspólnego stołu)
-        if self.round_num == 2:
+        if self.round == Round.FLOP_BET:
             for table in self.tables[:-1]:
                 table.show_cards(2)
 
         # Odkryj trzy wspólne karty
-        elif self.round_num == 4:
+        elif self.round == Round.TURN_BET:
             self.tables[-1].show_cards(3)
 
         # Odkryj po jednej wspólnej karcie
-        elif self.round_num == 6 or self.round_num == 8:
+        elif self.round == Round.RIVER_BET or self.round == Round.SHOWDOWN_BET:
             self.tables[-1].show_cards(1)
 
         # Zakończ rozgrywkę
-        elif self.round_num == 10:
+        elif self.round == Round.END:
             return self.end()
 
     def next_player(self):
@@ -228,7 +226,7 @@ class Game:
             return 2
 
     def again(self):
-        self.round_num = -1
+        self.round = Round.PRE_START
         self.tables = []
         self.bet = 1
         self.last_round_skipped = False

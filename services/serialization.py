@@ -99,7 +99,7 @@ def build_round_data(sid):
         "playersNum": game.players_num(),
         "pot": game.pot, 
         "bet": game.bet - player.bet,
-        "roundNum": game.round_num,
+        "roundNum": game.round,
         "credits": player.credits,
         "lastRoundSkipped": game.last_round_skipped,
         "yourRoundSkipped": player.last_round_skipped

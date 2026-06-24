@@ -1,3 +1,5 @@
+from game.round_state import *
+
 class Player:
     def __init__(self, nickname, credits, ID, sid):
         self.nickname = nickname
@@ -16,7 +18,7 @@ class Player:
     def can_bet(self, game):
         return (
             not self.allin
-            and game.round_num % 2 == 0
+            and is_betting_round(game.round)
             and game.bet == 0
             and self.credits > 0
         )
@@ -32,7 +34,7 @@ class Player:
     def can_raise(self, game):
         return (
             not self.allin 
-            and game.round_num % 2 == 0
+            and is_betting_round(game.round)
             and game.bet > 0
             and self.credits > self.bet + game.bet
         )
@@ -45,7 +47,7 @@ class Player:
             not self.allin
             and self.credits > 0
             and (
-                game.round_num % 2 == 0
+                is_betting_round(game.round)
                 or game.bet > self.bet + self.credits
             )
         )
