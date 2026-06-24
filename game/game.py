@@ -47,6 +47,17 @@ class Game:
     def is_end(self):
         return self.round == Round.END
     
+    def current_player(self):
+        if self.whose_round_is < 0 or self.whose_round_is >= len(self.players):
+            return None
+        return self.players[self.whose_round_is]
+
+    def can_you_make_action(self, sid):
+        id = self.sid_to_player[sid]
+        if id == None or id != self.whose_round_is:
+            return False
+        return True
+    
     def bet_to_zero(self):
         for player in self.players:
             player.bet = 0
@@ -145,7 +156,10 @@ class Game:
                 break
   
     def check(self, sid):
-        player = self.players[self.sid_to_player[sid]]
+        if not self.can_you_make_action(sid):
+            return
+        
+        player = self.current_player()
 
         if player.can_check(self):
             self.create_log("Gracz " + player.nickname + " czeka")
@@ -154,7 +168,10 @@ class Game:
             return 2
 
     def make_bet(self, sid, amount):
-        player = self.players[self.sid_to_player[sid]]
+        if not self.can_you_make_action(sid):
+            return
+        
+        player = self.current_player()
 
         if player.can_bet(self) and amount > 0 and player.credits >= amount:
             player.credits -= amount
@@ -168,7 +185,11 @@ class Game:
             return 2
 
     def call(self, sid):
-        player = self.players[self.sid_to_player[sid]]
+        if not self.can_you_make_action(sid):
+            return
+        
+        player = self.current_player()
+
         cost = self.bet - player.bet
 
         if player.can_call(self):
@@ -182,7 +203,11 @@ class Game:
             return 2
 
     def raiseBet(self, sid, amount):
-        player = self.players[self.sid_to_player[sid]]
+        if not self.can_you_make_action(sid):
+            return
+        
+        player = self.current_player()
+
         cost = self.bet - player.bet
         amount -= self.bet
 
@@ -198,7 +223,10 @@ class Game:
             return 2
 
     def fold(self, sid):
-        player = self.players[self.sid_to_player[sid]]
+        if not self.can_you_make_action(sid):
+            return
+        
+        player = self.current_player()
 
         if player.can_fold(self):
             player.fold = True
@@ -210,7 +238,11 @@ class Game:
             return 2
 
     def allin(self, sid):
-        player = self.players[self.sid_to_player[sid]]
+        if not self.can_you_make_action(sid):
+            return
+        
+        player = self.current_player()
+
         amount = player.credits
         cost = self.bet - player.bet
 
