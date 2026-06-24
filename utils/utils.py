@@ -4,10 +4,11 @@ from game import Game
 from flask_socketio import emit
 from app import app, game, socketio 
 
-from services.serialization import send_data, send_logs
+from services.serialization import send_data, send_logs, build_start_data
 
 def refresh_data():
     print("  Wyświetlam graczy, którym odświeżam dane")
+    socketio.emit("startData", build_start_data())
     send_logs()
     for player in game.players:
         print(player.nickname)

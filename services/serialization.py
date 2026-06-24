@@ -4,6 +4,13 @@ from game import Game
 from flask_socketio import emit
 from app import app, game, socketio 
 
+def build_start_data():
+    data = {
+        "playersNum": game.players_num(),
+        "started": game.started()
+    }
+    return data
+
 def summary():
     if game.is_end() == False:
         return False

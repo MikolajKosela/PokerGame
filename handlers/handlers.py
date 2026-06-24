@@ -8,11 +8,11 @@ from app import app, game, socketio
 from services.auth import grant_token, check_token 
 from services.serialization import send_data
 from utils.utils import refresh_data, send_error_message, send_info_message, send_message_to_everyone
-
+from services.serialization import build_start_data
 
 @socketio.on("startDataRequest")
 def start_data_request():
-    socketio.emit("startData", {"playersNum": game.players_num(), "started": game.started()})
+    socketio.emit("startData", build_start_data())
 
 @socketio.on("join")
 def join(data):
@@ -22,7 +22,6 @@ def join(data):
 
         if return_code.ok == True:
             socketio.emit("joined", {"token": grant_token()}, to=request.sid)
-            socketio.emit("startData", {"players_num": game.players_num(), "started": game.started()})
             refresh_data()
         else:
             send_error_message(return_code.info, request.sid)
@@ -35,8 +34,6 @@ def start_game():
     if game.sid_to_player[request.sid] == 0:
         game.start()
         refresh_data()
-        socketio.emit("startData", {"players_num": game.players_num(), "started": game.started()})
-
 
 @socketio.on("gameDataRequest")
 def game_data_request():
@@ -55,9 +52,7 @@ def check():
 
 @socketio.on("bet")
 def bet(data):
-    amount = data["amount"]
-    amount = str(amount)
-    amount = int(amount)
+    amount = int(data["amount"])
     print("bet: ", amount)
 
     return_code = game.make_bet(request.sid, amount)
@@ -80,9 +75,7 @@ def call():
 
 @socketio.on("raise")
 def raise_bet(data):
-    amount = data["amount"]
-    amount = str(amount)
-    amount = int(amount)
+    amount = int(data["amount"])
     print("raise: ", amount)
 
     return_code = game.raiseBet(request.sid, amount)
