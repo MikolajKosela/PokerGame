@@ -49,7 +49,7 @@ def can_join_game(game, sid, nickname):
     if game.started():
         return Result(False, "Invalid query", "Nie możesz dołączyć w trakcie trwającej rozgrywki")
 
-    if game.get_player_by_sid(sid) != None:
+    if game.get_player_by_sid(sid) is not None:
         return Result(False, "Invalid query", "Nie możesz dołączyć ponownie, bo już jesteś graczem")
 
     if len(nickname) == 0 :

@@ -1,4 +1,4 @@
-from game.round_state import *
+from game.round_state import is_betting_round
 
 class Player:
     def __init__(self, nickname, credits, ID, sid):

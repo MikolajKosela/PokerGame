@@ -1,4 +1,4 @@
-from models import Card, Evaluation_result
+from models import Evaluation_result
 
 '''
 Układy kart
@@ -118,7 +118,7 @@ def color_number_to_color(color):
             return "Trefl"
 
 def is_flush(cards, color):
-    if color == None:
+    if color is None:
         return Evaluation_result(0)
 
     cards_in_order = []
@@ -157,7 +157,7 @@ def is_straight(cards):
     return Evaluation_result(5, "Strit (5 kart następujących po sobie)", cards_in_order)
 
 def is_straight_flush(cards, color):
-    if color == None:
+    if color is None:
         return Evaluation_result(0)
     
     cards_in_color = []
@@ -190,7 +190,7 @@ def evaluate_hand(cards):
     result = max(result, is_straight(cards))
 
     color = color_with_5_cards(cards)
-    if color != None:
+    if color is not None:
         result = max(result, is_flush(cards, color))
 
         result = max(result, is_straight_flush(cards, color))

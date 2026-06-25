@@ -1,5 +1,3 @@
-from models import Card, Pack
-
 class Table:
     def __init__(self, pack, num):
         self.cards = pack.get_cards(num)

@@ -1,18 +1,12 @@
-from models import Card, Pack, Table, Player 
-from game import Game
-
-from flask_socketio import emit
-from app import app, game, socketio 
-
-def build_start_data():
+def build_start_data(game):
     data = {
         "playersNum": game.players_num(),
         "started": game.started()
     }
     return data
 
-def summary():
-    if game.is_end() == False:
+def summary(socketio, game):
+    if not game.is_end():
         return False
     sumarry_data = []
 
@@ -44,7 +38,7 @@ def summary():
     }
     socketio.emit("summary", sumarry_data)
 
-def check_state(sid):
+def check_state(game, sid):
     cur_ID = game.get_player_by_sid(sid)
 
     state = "/"
@@ -57,7 +51,7 @@ def check_state(sid):
 
     if cur_ID is None:
         state = "/"
-    elif game.is_end() == True:
+    elif game.is_end():
         state = "/end"
     elif game.whose_round_is == -1:
         state = "/lobby"
@@ -67,7 +61,7 @@ def check_state(sid):
     print("Dostałem zapytanie od", cur_ID, "wysyłam", state)
     return state
 
-def build_buttons(sid):
+def build_buttons(game, sid):
     player = game.get_player_by_sid(sid)
 
     buttons = {
@@ -81,20 +75,20 @@ def build_buttons(sid):
 
     return buttons 
 
-def build_game_logs():
+def build_game_logs(game):
     logs = []
 
     for log in game.event_queue:
         logs.append({"message": log.display_time + " - " + log.message})
     return logs
 
-def send_logs():
+def send_logs(socketio, game):
     if len(game.event_queue) > 0:
-        logs = build_game_logs()
+        logs = build_game_logs(game)
         game.event_queue = []
         socketio.emit("logs", logs)
 
-def build_round_data(sid):
+def build_round_data(game, sid):
     player = game.get_player_by_sid(sid)
 
     cur_nick = None
@@ -115,14 +109,14 @@ def build_round_data(sid):
     
     return round_data
     
-def build_common_cards():
+def build_common_cards(game):
     return game.tables[-1].to_dict()
 
-def build_player_cards(sid):
+def build_player_cards(game, sid):
     player = game.get_player_by_sid(sid)
     return game.tables[player.ID].to_dict()
 
-def build_players_list():
+def build_players_list(game):
     player_list = []
     for player in game.players:
         p = player.to_dict()
@@ -131,26 +125,26 @@ def build_players_list():
 
     return player_list
 
-def send_data(sid):
+def send_data(socketio, game, sid):
     print("Wysyłam dane do gracza: ", sid)
     state = "/" 
     common_cards = None 
     player_cards = None
     round_data = None 
-    players = build_players_list() 
+    players = build_players_list(game) 
     buttons = None 
 
-    if game.sid_to_player.get(sid) != None:
-        state = check_state(sid)
+    if game.sid_to_player.get(sid) is not None:
+        state = check_state(game, sid)
 
         player = game.get_player_by_sid(sid)
         if game.whose_round_is == player.ID:
-            buttons = build_buttons(sid)
+            buttons = build_buttons(game, sid)
 
     if game.started():
-        common_cards = build_common_cards()
-        player_cards = build_player_cards(sid)
-        round_data = build_round_data(sid)
+        common_cards = build_common_cards(game)
+        player_cards = build_player_cards(game, sid)
+        round_data = build_round_data(game, sid)
 
 
     data = {
@@ -163,6 +157,6 @@ def send_data(sid):
         "players": players
     }
 
-    if game.is_end() == True:
-        summary()
+    if game.is_end():
+        summary(socketio, game)
     socketio.emit("gameData", data, to=sid)

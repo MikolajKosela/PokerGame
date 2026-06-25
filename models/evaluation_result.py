@@ -6,7 +6,7 @@ class Evaluation_result:
 
     def __lt__(self, other):
         if self.power == other.power and self.power != 0:
-            for card, other_card in self.cards, oher.cards:
+            for card, other_card in self.cards, other.cards:
                 if card != other.card:
                     return card < other_card
         else:
@@ -14,7 +14,7 @@ class Evaluation_result:
     
     def __eq__(self, other):
         if self.power == other.power:
-            for card, other_card in self.cards, oher.cards:
+            for card, other_card in self.cards, other.cards:
                 if card != other.card:
                     return False
             return True
