@@ -55,7 +55,7 @@ def check_state(sid):
     # 4 - end
     print (cur_ID, game.is_end(), game.whose_round_is)
 
-    if cur_ID == None:
+    if cur_ID is None:
         state = "/"
     elif game.is_end() == True:
         state = "/end"

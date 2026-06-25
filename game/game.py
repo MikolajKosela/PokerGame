@@ -25,15 +25,7 @@ class Game:
         self.history.append(Log.create(message))
 
     def append_player(self, nickname, credits, sid):
-        if len(nickname) == 0 :
-            return Result(False, "Invalid data", "Nick nie moży być pusty")
-        elif not all(char.isalnum() or char == "_" for char in nickname):
-            return Result(False,  "Invalid data", "Nick może składać się z tylko z znaków a-z, 0-9, _")
-        elif any(player.nickname == nickname for player in self.players):
-            return Result(False, "Invalid query", "Gracz o takim nicku istnieje")
-        else :
-            self.players.append(Player(nickname, credits, self.players_num(), sid))
-            return Result(True)
+        self.players.append(Player(nickname, credits, self.players_num(), sid))
     
     def get_player_by_sid(self, sid):
         if sid in self.sid_to_player.keys():

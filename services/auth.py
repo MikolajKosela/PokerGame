@@ -11,7 +11,7 @@ from secrets import token_urlsafe
 def handshake(data):
     playerID = check_token(data["token"]) 
 
-    if playerID == None:
+    if playerID is None:
         return socketio.emit("handshakeAnswer", {"ok" : False}, to=request.sid)
 
     game.sid_to_player[request.sid] = playerID 

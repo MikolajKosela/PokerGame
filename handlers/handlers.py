@@ -6,9 +6,9 @@ from flask_socketio import emit
 from app import app, game, socketio 
 
 from services.auth import grant_token, check_token 
-from services.serialization import send_data
+from services.serialization import send_data, build_start_data
 from utils.utils import refresh_data, send_error_message, send_info_message, send_message_to_everyone
-from services.serialization import build_start_data
+from services.validation import can_receive_action, can_start_game, can_choose_winners, can_join_game
 
 @socketio.on("startDataRequest")
 def start_data_request():
@@ -16,24 +16,26 @@ def start_data_request():
 
 @socketio.on("join")
 def join(data):
-    if not game.started():
-        nickname = data["nickname"]
-        return_code = game.append_player(nickname, 100, request.sid)
+    nickname = data["nickname"]
+    result = can_join_game(game, request.sid, nickname)
 
-        if return_code.ok == True:
-            socketio.emit("joined", {"token": grant_token()}, to=request.sid)
-            refresh_data()
-        else:
-            send_error_message(return_code.info, request.sid)
+    if result.ok == True:
+        game.append_player(nickname, 100, request.sid)
+        socketio.emit("joined", {"token": grant_token()}, to=request.sid)
+        refresh_data()
     else:
-        send_error_message("Nie możesz dołączyć w trakcie trwającej rozgrywki", request.sid)
-
+        send_error_message(result.info, request.sid)
 
 @socketio.on("startGame")
 def start_game():
-    if game.sid_to_player[request.sid] == 0:
-        game.start()
-        refresh_data()
+    result = can_start_game(game, request.sid)
+
+    if result.ok == False:
+        send_error_message(result.info, request.sid)
+        return
+
+    game.start()
+    refresh_data()
 
 @socketio.on("gameDataRequest")
 def game_data_request():
@@ -42,77 +44,113 @@ def game_data_request():
 @socketio.on("check")
 def check():
     print("check")
-    
-    return_code = game.check(request.sid)
+    result = can_receive_action(game, request.sid)
 
-    if return_code == None:
+    if result.ok == False:
+        send_error_message(result.info, request.sid)
+        return
+    
+    result = game.check(request.sid)
+
+    if result is None:
         refresh_data()
     else:
-        send_error_message(return_code.info, request.sid)
+        send_error_message(result.info, request.sid)
 
 @socketio.on("bet")
 def bet(data):
     amount = int(data["amount"])
     print("bet: ", amount)
+    result = can_receive_action(game, request.sid)
 
-    return_code = game.make_bet(request.sid, amount)
+    if result.ok == False:
+        send_error_message(result.info, request.sid)
+        return
 
-    if return_code == None:
+    result = game.make_bet(request.sid, amount)
+
+    if result is None:
         refresh_data()
     else:
-        send_error_message(return_code.info, request.sid)
+        send_error_message(result.info, request.sid)
 
 @socketio.on("call")
 def call():
     print("call")
-    
-    return_code = game.call(request.sid)
+    result = can_receive_action(game, request.sid)
 
-    if return_code == None:
+    if result.ok == False:
+        send_error_message(result.info, request.sid)
+        return
+    
+    result = game.call(request.sid)
+
+    if result is None:
         refresh_data()
     else:
-        send_error_message(return_code.info, request.sid)
+        send_error_message(result.info, request.sid)
 
 @socketio.on("raise")
 def raise_bet(data):
     amount = int(data["amount"])
     print("raise: ", amount)
+    result = can_receive_action(game, request.sid)
 
-    return_code = game.raiseBet(request.sid, amount)
+    if result.ok == False:
+        send_error_message(result.info, request.sid)
+        return
 
-    if return_code == None:
+    result = game.raiseBet(request.sid, amount)
+
+    if result is None:
         refresh_data()
     else:
-        send_error_message(return_code.info, request.sid)
+        send_error_message(result.info, request.sid)
 
 @socketio.on("fold")
 def fold():
     print("fold")
+    result = can_receive_action(game, request.sid)
 
-    return_code = game.fold(request.sid)
+    if result.ok == False:
+        send_error_message(result.info, request.sid)
+        return
 
-    if return_code == None:
+    result = game.fold(request.sid)
+
+    if result is None:
         refresh_data()
     else:
-        send_error_message(return_code.info, request.sid)
+        send_error_message(result.info, request.sid)
 
 @socketio.on("allin")
 def allin():
     print("allin")
+    result = can_receive_action(game, request.sid)
 
-    return_code = game.allin(request.sid)
+    if result.ok == False:
+        send_error_message(result.info, request.sid)
+        return
 
-    if return_code == None:
+    result = game.allin(request.sid)
+
+    if result is None:
         refresh_data()
     else:
-        send_error_message(return_code.info, request.sid)
+        send_error_message(result.info, request.sid)
 
 @socketio.on("winners")
 def winners(data):
+    result = can_choose_winners(game, request.sid)
+
+    if result.ok == False:
+        send_error_message(result.info, request.sid)
+        return
+
     winnersNum = len(data)
     if winnersNum != 0:
-        for player in data:
-            id = int(player)
+        for playerID in data:
+            id = int(playerID)
             game.players[id].credits += game.pot // winnersNum
     
         game.pot %= winnersNum
