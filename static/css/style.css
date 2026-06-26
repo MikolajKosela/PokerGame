@@ -135,8 +135,8 @@ input[type="number"] {
 
 .cards li {
     display: inline-block;
-    width: 65px;
-    height: 90px;
+    width: 80px;
+    height: 95px;
 
     font-size: 2rem;
 
