@@ -34,7 +34,10 @@ class Game:
         return len(self.players) 
     
     def active_players(self):
-        return [player for player in self.players if not player.fold]
+        return [player for player in self.players if not player.fold and not player.allin and not player.credits == 0]
+    
+    def can_end_game(self):
+        return len(self.active_players()) <= 1
 
     def started(self):
         return game_started(self.round)
@@ -55,14 +58,17 @@ class Game:
     def start(self):
         if self.started():
             return
+
         self.pack.shuffle_cards()
         for _ in self.players:
             self.tables.append(Table(self.pack, 2))
 
         self.tables.append(Table(self.pack, 5))
-        self.whose_round_is = 0
+        self.whose_round_is = -1
         self.round = Round.PRE_FLOP_BET
         self.create_log("Rozgrywka się rozpoczęła")
+
+        self.next_player()
 
     def end(self):
         self.round = Round.END
@@ -128,6 +134,10 @@ class Game:
             return self.end()
 
     def next_player(self):
+        if self.can_end_game():
+            self.create_log("Rozgrywka została zakończona, ponieważ nikt nie mógł już podjąć żadnej decyzji")
+            return self.end()
+
         while not self.is_end():
             self.whose_round_is += 1
             if self.whose_round_is >= self.players_num():

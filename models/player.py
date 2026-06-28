@@ -13,11 +13,16 @@ class Player:
         self.result = None
     
     def can_check(self, game):
-        return (self.allin or self.bet == game.bet)
+        return (
+            not self.allin
+            and not self.fold
+            and self.bet == game.bet 
+        )
     
     def can_bet(self, game):
         return (
             not self.allin
+            and not self.fold
             and is_betting_round(game.round)
             and game.bet == 0
             and self.credits > 0
@@ -27,6 +32,7 @@ class Player:
         cost = game.bet - self.bet
         return (
             not self.allin
+            and not self.fold
             and game.bet > self.bet
             and self.credits >= cost
         )
@@ -34,17 +40,21 @@ class Player:
     def can_raise(self, game):
         return (
             not self.allin 
+            and not self.fold
             and is_betting_round(game.round)
             and game.bet > 0
             and self.credits > self.bet + game.bet
         )
     
     def can_fold(self, game):
-        return (not self.allin)
+        return (
+            not self.allin
+        )
 
     def can_allin(self, game):
         return (
             not self.allin
+            and not self.fold
             and self.credits > 0
             and (
                 is_betting_round(game.round)
