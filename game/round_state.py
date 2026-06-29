@@ -21,7 +21,7 @@ class Round(IntEnum):
     END = 10
 
 def is_game_round(round_num: Round) -> bool:
-    return round_num >= 0 and round_num <= 9
+    return Round.PRE_FLOP_BET <= round_num <= Round.SHOWDOWN_CALL
 
 def is_betting_round(round_num: Round) -> bool:
     return is_game_round(round_num) and round_num % 2 == 0
@@ -30,4 +30,4 @@ def is_calling_round(round_num: Round) -> bool:
     return is_game_round(round_num) and round_num % 2 == 1
 
 def game_started(round_num: Round) -> bool:
-    return round_num > -1
+    return round_num > Round.PRE_START

@@ -60,7 +60,7 @@ English localization is planned for a future release.
 ## Roadmap
 
 * [ ] English translation
-* [ ] Complete type annotations
+* [x] Complete type annotations
 * [ ] More game rule customization options
 * [ ] Better handling of player disconnections
 * [ ] User interface improvements

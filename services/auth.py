@@ -1,31 +1,41 @@
 from secrets import token_urlsafe
+from typing import TypedDict
 
-def handshake(socketio, game, token, sid):
-    playerID = check_token(game, token) 
+from game import Game
 
-    if playerID is None:
-        return {"ok" : False}
 
-    game.sid_to_player[sid] = playerID 
+class HandshakeData(TypedDict):
+    ok: bool
+    admin: bool
 
-    if playerID >= 0 and playerID < len(game.players):
-        game.players[playerID].sid = sid
 
-        return {"ok" : True, "admin" : playerID == game.adminID}
+def handshake(game: Game, token: object, sid: str) -> HandshakeData:
+    player_id = check_token(game, token)
 
-    return {"ok" : False}
+    if player_id is None:
+        return {"ok": False, "admin": False}
 
-def grant_token(game):
+    if not 0 <= player_id < len(game.players):
+        return {"ok": False, "admin": False}
+
+    game.sid_to_player[sid] = player_id
+    game.players[player_id].sid = sid
+
+    return {
+        "ok": True,
+        "admin": player_id == game.admin_id,
+    }
+
+
+def grant_token(game: Game, player_id: int) -> str:
     token = token_urlsafe(32)
-    while token in game.sid_to_player.keys():
+
+    while token in game.token_to_player:
         token = token_urlsafe(32)
 
-    game.token_to_player[str(token)] = len(game.sid_to_player)
+    game.token_to_player[token] = player_id
     return token
 
-def check_token(game, token):
-    token = str(token)
 
-    if token in game.token_to_player.keys():
-        return game.token_to_player[token]
-    return None 
+def check_token(game: Game, token: object) -> int | None:
+    return game.token_to_player.get(str(token))

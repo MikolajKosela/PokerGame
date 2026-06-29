@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+
 @dataclass
 class Log:
     message: str
@@ -8,10 +9,11 @@ class Log:
     display_time: str
 
     @staticmethod
-    def create(message: str):
+    def create(message: str) -> "Log":
         now = datetime.now()
+
         return Log(
             message=message,
             timestamp=now.timestamp(),
-            display_time=now.strftime("%H:%M:%S")
+            display_time=now.strftime("%H:%M:%S"),
         )
