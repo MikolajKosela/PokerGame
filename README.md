@@ -1,20 +1,67 @@
 # PokerGame
-Simple poker game for playing with friends via Internet. Set your own server, invite mates you can't meet up with and take your seats at the poker table.
 
-# Instalation
-You need a python3, virtual python's enviroment (venv) and flask framework.
-For example on Ubuntu:
+A simple poker game for playing with friends over the Internet. Host your own server, invite your friends, and take your seats at the poker table.
+
+## Installation
+
+You need Python 3, a virtual environment (`venv`), and the required Python dependencies.
+
+On Debian-based systems:
+
 ```bash
 sudo apt install python3 python3-pip python3-venv
 ```
-Next clone this repository, run venv and set up a server.
+
+Clone the repository and create a virtual environment:
+
 ```bash
 git clone https://github.com/MikolajKosela/PokerGame
+cd PokerGame
+
 python3 -m venv venv
-pip install flask flask-socketio
 source venv/bin/activate
+
+pip install flask flask-socketio
 python3 app.py
 ```
-Your server is running now on port 5000.
 
-**This file isn't complete**
+The server will start on port `5000`.
+
+## Example
+
+Once your server is running on port `5000`, you can expose it to the Internet using a Cloudflare Tunnel.
+
+On Debian-based systems:
+
+```bash
+sudo apt install cloudflared
+cloudflared tunnel --url http://localhost:5000
+```
+
+You should see something similar to:
+
+```text
+|  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
+|  https://???-???-???-???.trycloudflare.com                                                 |
+```
+
+Simply copy the generated URL and send it to your friends.
+
+## Screenshots
+
+*Coming soon.*
+
+## Language Support
+
+The interface is currently available only in **Polish**.
+
+English localization is planned for a future release.
+
+## Roadmap
+
+* [ ] English translation
+* [ ] Complete type annotations
+* [ ] More game rule customization options
+* [ ] Better handling of player disconnections
+* [ ] User interface improvements
+* [ ] Additional features
